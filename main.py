@@ -20,7 +20,8 @@ prefix = "!"
 commands = {
     "question": "Ask the bot a question and get a response.",
     "roll": "Roll a random number between 1 and 6.",
-    "commands": "Display a list of available commands."
+    "commands": "Display a list of available commands.",
+    "%'command'": "Command to receive a response privately."
 }
 
 @client.event
