@@ -3,12 +3,14 @@ This is a Python-based Discord chatbot that is designed to perform a number of t
 
 
 ## Features
-Returns a variety of information based on user requests
-<br>Uses OpenAI GPT-3 to answer user questions
-Provides weather data for specified locations
-Returns random jokes and cat facts
-Recommends movies and recipes based on user input
-Can retrieve current stock data and recent news articles
+<ul>
+<li>Returns a variety of information based on user requests
+<li>Uses OpenAI GPT-3 to answer user questions
+<li>Provides weather data for specified locations
+<li>Returns random jokes and cat facts
+<li>Recommends movies and recipes based on user input
+<li>Can retrieve current stock data and recent news articles
+</ul>
 
 ## Prerequisites
 Python 3.8+
@@ -41,10 +43,10 @@ To run the bot, you will need to install the following Python packages:
 Run the bot using:
 <br>```python bot.py```
 ## Usage
-To use the bot, start by typing !commands to see a list of available commands.
-<br>To request information using the bot, type !<command> followed by the required parameters.
-<br>Some commands may require additional input from the user, in which case the bot will prompt the user to enter the required information.
-<br>If a command is preceded with %, the bot will respond privately to the user.
+-To use the bot, start by typing !commands to see a list of available commands.
+<br>-To request information using the bot, type !<command> followed by the required parameters.
+<br>-Some commands may require additional input from the user, in which case the bot will prompt the user to enter the required information.
+<br>-If a command is preceded with %, the bot will respond privately to the user.
 
 The bot supports the following commands:
 <ul>
