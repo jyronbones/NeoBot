@@ -21,7 +21,7 @@ Clone the repository to your local machine
 Install the required dependencies using pip:
 <br>
 ```pip install -r requirements.txt```
-<br>Create a .env file in the same directory as the bot.py file.
+<br><br>Create a .env file in the same directory as the bot.py file.
 Add your API keys to the .env file:
 ```
 OPENAI_API_KEY = <your OpenAI API key>
