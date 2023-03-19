@@ -22,6 +22,8 @@ USER_RESPONSE_TIME = 60.0
 # Define the commands and their descriptions
 commands = {
     "question": "Ask the bot a question and get a response.",
+    "define": "Get a definition from Urban Dictionary",
+    "reddit": "Get a specified number of the most recent posts(max 10) from a given subreddit.",
     "roll": "Roll a random number between 1 and 6.",
     "weather": "Get the current weather for a location.",
     "movie": "Get a random movie recommendation.",
@@ -233,6 +235,141 @@ async def on_message(message):
                 await message.channel.send(f"I recommend watching {title}.\n{overview}")
             else:
                 await message.author.send(f"I recommend watching {title}.\n{overview}")
+
+        elif command == "define":
+            # Send a prompt asking the user to enter a word to define
+            if not is_private:
+                await message.channel.send("Please enter a word to define!")
+            else:
+                await message.author.send("Please enter a word to define!")
+
+            # Wait for the user to respond with a word to define
+            try:
+                word_message = await client.wait_for(
+                    "message",
+                    timeout=USER_RESPONSE_TIME,
+                    check=lambda
+                        m: m.author == message.author and m.channel == message.channel and not m.content.startswith(
+                        prefix)
+                )
+
+            except asyncio.TimeoutError:
+
+                if not is_private:
+                    await message.channel.send("Sorry, you took too long to enter a word!")
+                else:
+                    await message.author.send("Sorry, you took too long to enter a word!")
+
+                return
+
+            # Make a request to the Urban Dictionary API to get the definition
+            response = requests.get(f"https://api.urbandictionary.com/v0/define?term={word_message.content}")
+
+            if response.status_code == 200:
+                data = response.json()
+                if data["list"]:
+                    # Get the first definition and example
+                    definition = data["list"][0]["definition"]
+                    example = data["list"][0]["example"]
+
+                    # Send the definition and example to the same channel or in a private message
+                    if not is_private:
+                        await message.channel.send(f"**{word_message.content}**\n\n{definition}\n\nExample: {example}")
+                    else:
+                        await message.author.send(f"**{word_message.content}**\n\n{definition}\n\nExample: {example}")
+                else:
+                    # If no definitions were found, send a message indicating that
+                    if not is_private:
+                        await message.channel.send(f"No definitions were found for **{word_message.content}**.")
+                    else:
+                        await message.author.send(f"No definitions were found for **{word_message.content}**.")
+            else:
+                # If an error occurred, send a message indicating that
+                if not is_private:
+                    await message.channel.send("An error occurred while fetching the definition.")
+                else:
+                    await message.author.send("An error occurred while fetching the definition.")
+
+        elif command == "reddit":
+            # Ask the user for the subreddit and number of posts they want to retrieve
+            if not is_private:
+                await message.channel.send("What subreddit do you want to get posts from?")
+            else:
+                await message.author.send("What subreddit do you want to get posts from?")
+            try:
+                subreddit_message = await client.wait_for(
+                    "message",
+                    timeout=USER_RESPONSE_TIME,
+                    check=lambda
+                        m: m.author == message.author and m.channel == message.channel and not m.content.startswith(
+                        prefix)
+                )
+                subreddit = subreddit_message.content.strip()
+
+                if not is_private:
+                    await message.channel.send(f"How many posts do you want to get from {subreddit}? (Maximum: 10)")
+                else:
+                    await message.author.send(f"How many posts do you want to get from {subreddit}? (Maximum: 10)")
+                try:
+                    limit_message = await client.wait_for(
+                        "message",
+                        timeout=USER_RESPONSE_TIME,
+                        check=lambda
+                            m: m.author == message.author and m.channel == message.channel and not m.content.startswith(
+                            prefix)
+                    )
+                    limit = limit_message.content.strip()
+
+                    # Check if the number of posts is valid
+                    if not limit.isdigit() or int(limit) < 1 or int(limit) > 10:
+                        raise ValueError("You exceeded the number of posts.\nPlease enter a valid number of posts ("
+                                         "1-10).\nTry your command again...")
+
+                    # Send the HTTP request to the Reddit API and retrieve the data
+                    try:
+                        response = requests.get(
+                            f"https://www.reddit.com/r/{subreddit}/hot.json?limit={limit}",
+                            headers={"User-Agent": "Discord Bot"},
+                        )
+                        response.raise_for_status()
+                        data = response.json()
+
+                        # Extract the post titles from the data
+                        titles = [post["data"]["title"] for post in data["data"]["children"]]
+
+                        # Send the post titles to the user
+                        if not is_private:
+                            await message.channel.send("\n".join(titles))
+                        else:
+                            await message.author.send("\n".join(titles))
+                    except requests.exceptions.HTTPError as e:
+                        if not is_private:
+                            await message.channel.send(
+                                f"The subreddit you requested, {subreddit}, does not exist. Please try again with a different subreddit.")
+                        else:
+                            await message.author.send(
+                                f"The subreddit you requested, {subreddit}, does not exist. Please try again with a different subreddit.")
+                except asyncio.TimeoutError:
+                    if not is_private:
+                        await message.channel.send("Sorry, you took too long to respond with the number of posts!")
+                    else:
+                        await message.author.send("Sorry, you took too long to respond with the number of posts!")
+                except ValueError as e:
+                    if not is_private:
+                        await message.channel.send(str(e))
+                    else:
+                        await message.author.send(str(e))
+            except asyncio.TimeoutError:
+                if not is_private:
+                    await message.channel.send("Sorry, you took too long to respond with the subreddit!")
+                else:
+                    await message.author.send("Sorry, you took too long to respond with the subreddit!")
+            except requests.exceptions.HTTPError as e:
+                if not is_private:
+                    await message.channel.send(f"An error occurred: {e}")
+                else:
+                    await message.author.send(f"An error occurred: {e}")
+
 
         elif command == "commands":
             # Construct the list of commands and their descriptions
