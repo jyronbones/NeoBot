@@ -62,7 +62,9 @@ async def on_message(message):
                 question_message = await client.wait_for(
                     "message",
                     timeout=USER_RESPONSE_TIME,
-                    check=lambda m: m.author == message.author and m.channel == message.channel
+                    check=lambda
+                        m: m.author == message.author and m.channel == message.channel and not m.content.startswith(
+                        prefix)
                 )
             except asyncio.TimeoutError:
                 if not is_private:
@@ -126,13 +128,18 @@ async def on_message(message):
                 location_message = await client.wait_for(
                     "message",
                     timeout=USER_RESPONSE_TIME,
-                    check=lambda m: m.author == message.author and m.channel == message.channel
+                    check=lambda
+                        m: m.author == message.author and m.channel == message.channel and not m.content.startswith(
+                        prefix)
                 )
+
             except asyncio.TimeoutError:
+
                 if not is_private:
                     await message.channel.send("Sorry, you took too long to enter a location!")
                 else:
                     await message.author.send("Sorry, you took too long to enter a location!")
+
                 return
 
             # Make a request to the Weatherstack API to get the weather information
@@ -140,19 +147,23 @@ async def on_message(message):
                 "access_key": os.getenv("YOUR_WEATHERSTACK_API_KEY"),
                 "query": location_message.content
             }
+
             response = requests.get("http://api.weatherstack.com/current", params=params)
             if response.status_code == 200:
                 data = response.json()
                 location = data["location"]["name"]
                 temperature = data["current"]["temperature"]
                 description = data["current"]["weather_descriptions"][0]
+
                 # Send the weather information to the same channel or in a private message
                 if not is_private:
                     await message.channel.send(
-                        f"The weather in {location} is {description} with a temperature of {temperature} degrees Celsius.")
+                        f"The weather in {location} is {description} with a temperature of {temperature} degrees "
+                        f"Celsius.")
                 else:
                     await message.author.send(
-                        f"The weather in {location} is {description} with a temperature of {temperature} degrees Celsius.")
+                        f"The weather in {location} is {description} with a temperature of {temperature} degrees "
+                        f"Celsius.")
             else:
                 if not is_private:
                     await message.channel.send("An error occurred while fetching the weather information.")
@@ -222,7 +233,6 @@ async def on_message(message):
                 await message.channel.send(f"I recommend watching {title}.\n{overview}")
             else:
                 await message.author.send(f"I recommend watching {title}.\n{overview}")
-
 
         elif command == "commands":
             # Construct the list of commands and their descriptions
