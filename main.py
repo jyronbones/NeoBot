@@ -38,8 +38,10 @@ commands = {
     "commands": "Display a list of available commands.",
     "define": "Get a definition from Urban Dictionary",
     "joke": "Get a random joke.",
+    "lyrics": "Get lyrics of a song.",
     "movie": "Get a random movie recommendation.",
     "news": "Get recent news articles.",
+    "poem": "Get a random poem.",
     "question": "Ask the bot a question and get a response.",
     "reddit": "Get a specified number of the most recent posts(max 10) from a given subreddit.",
     "roll": "Roll a random number between 1 and 6.",
@@ -104,7 +106,7 @@ async def on_message(message):
                 response = openai.Completion.create(
                     engine=model_engine,
                     prompt=question_message.content,
-                    max_tokens=50
+                    max_tokens=500
                 )
                 if not is_private:
                     await message.channel.send(response.choices[0].text.strip())
@@ -654,6 +656,75 @@ async def on_message(message):
                         await message.channel.send("No recipes found!")
                     else:
                         await message.author.send("No recipes found!")
+            except requests.exceptions.HTTPError as e:
+                if not is_private:
+                    await message.channel.send(f"{e}")
+                else:
+                    await message.author.send(f"{e}")
+
+        elif command == "poem":
+            # Get a random poem from the PoetryDB API
+            try:
+                response = requests.get("https://poetrydb.org/random")
+                poem = response.json()[0]
+                if not is_private:
+                    await message.channel.send(
+                        f"{poem['title']} by {poem['author']}:\n\n{poem['lines'][0]}\n{poem['lines'][1]}\n{poem['lines'][2]}")
+                else:
+                    await message.author.send(
+                        f"{poem['title']} by {poem['author']}:\n\n{poem['lines'][0]}\n{poem['lines'][1]}\n{poem['lines'][2]}")
+            except requests.exceptions.HTTPError as e:
+                if not is_private:
+                    await message.channel.send(f"{e}")
+                else:
+                    await message.author.send(f"{e}")
+
+        elif command == "lyrics":
+            # Send a prompt asking the user for a song name
+            if not is_private:
+                await message.channel.send("Please enter the name of a song:")
+            else:
+                await message.author.send("Please enter the name of a song:")
+
+            # Wait for the user to respond with a song name
+            try:
+                song_name_message = await client.wait_for(
+                    "message",
+                    timeout=USER_RESPONSE_TIME,
+                    check=lambda
+                        m: m.author == message.author and m.channel == message.channel and not m.content.startswith(
+                        prefix)
+                )
+            except asyncio.TimeoutError:
+                if not is_private:
+                    await message.channel.send("Sorry, you took too long to enter a song name!")
+                else:
+                    await message.author.send("Sorry, you took too long to enter a song name!")
+                return
+
+            # Get the lyrics of the song using the Musixmatch API
+            try:
+                url = f"https://api.musixmatch.com/ws/1.1/track.search?q_track={song_name_message.content}&page_size" \
+                      f"=1&s_track_rating=desc&apikey={MUSICMATCH_API_KEY}"
+                response = requests.get(url)
+                data = response.json()
+                track_list = data["message"]["body"]["track_list"]
+                if not track_list:
+                    if not is_private:
+                        await message.channel.send(
+                            f"Sorry, I couldn't find the lyrics for {song_name_message.content}!")
+                    else:
+                        await message.author.send(f"Sorry, I couldn't find the lyrics for {song_name_message.content}!")
+                    return
+                track_id = track_list[0]["track"]["track_id"]
+                url = f"https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id={track_id}&apikey={MUSICMATCH_API_KEY}"
+                response = requests.get(url)
+                data = response.json()
+                lyrics = data["message"]["body"]["lyrics"]["lyrics_body"].replace("** This Lyrics is NOT for Commercial use **", "")
+                if not is_private:
+                    await message.channel.send(lyrics.strip())
+                else:
+                    await message.author.send(lyrics.strip())
             except requests.exceptions.HTTPError as e:
                 if not is_private:
                     await message.channel.send(f"{e}")
