@@ -1,3 +1,4 @@
+import html
 import os
 import discord
 import requests
@@ -5,12 +6,13 @@ from dotenv import load_dotenv
 import openai
 import asyncio
 import random
+from commands import commands
 
 load_dotenv()
 client = discord.Client(intents=discord.Intents.all())
 
 # Set up the OpenAI API credentials
-model_engine = "text-davinci-002"
+model_engine = "text-davinci-003"
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Define news API key
@@ -31,27 +33,6 @@ prefix = "!"
 # Define timeout time for user response
 USER_RESPONSE_TIME = 60.0
 
-# Define the commands and their descriptions
-commands = {
-    "%'command'": "Command to receive a response privately.",
-    "catfact": "Get a random cat fact.",
-    "commands": "Display a list of available commands.",
-    "define": "Get a definition from Urban Dictionary",
-    "joke": "Get a random joke.",
-    "lyrics": "Get lyrics of a song.",
-    "movie": "Get a random movie recommendation.",
-    "news": "Get recent news articles.",
-    "poem": "Get a random poem.",
-    "question": "Ask the bot a question and get a response.",
-    "reddit": "Get a specified number of the most recent posts(max 10) from a given subreddit.",
-    "roll": "Roll a random number between 1 and 6.",
-    "song": "Get a song title based on lyrics.",
-    "stock": "Get current stock data.",
-    "recipe": "Get recipe for a food.",
-    "trivia": "Get a random trivia question",
-    "weather": "Get the current weather for a location."
-}
-
 # Define the Open Trivia DB API endpoint and default parameters
 trivia_api_url = 'https://opentdb.com/api.php'
 trivia_params = {
@@ -69,6 +50,11 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
+
+    if message.guild is not None:
+        print(f"{message.author} in server '{message.guild.name}' ({message.channel.name}): {message.content}")
+    else:
+        print(f"{message.author} sent a private message: {message.content}")
 
     if message.content.startswith(prefix):
         is_private = False
@@ -421,8 +407,8 @@ async def on_message(message):
                     "message",
                     timeout=USER_RESPONSE_TIME,
                     check=lambda
-                        m: m.author == message.author and m.channel == message.channel and not m.content.startswith(
-                        prefix)
+                        m: m.author == message.author and m.channel == message.channel and m.content.isdigit() and 1 <= int(
+                        m.content) <= len(choices)
                 )
                 user_answer = int(answer_message.content) - 1
                 correct_answer = choices.index(data['correct_answer'])
@@ -730,6 +716,42 @@ async def on_message(message):
                     await message.channel.send(f"{e}")
                 else:
                     await message.author.send(f"{e}")
+
+        elif command == "insult":
+            if not is_private:
+                await message.channel.send("Who do you want me to insult?")
+            else:
+                await message.author.send("Who do you want me to insult?")
+
+            try:
+                response = await client.wait_for(
+                    "message",
+                    timeout=USER_RESPONSE_TIME,
+                    check=lambda
+                        m: m.author == message.author and m.channel == message.channel and not m.content.startswith(
+                        prefix)
+                )
+                insultee = response.content
+                if '<@1086521876156776548>' in insultee:
+                    insultee = str(message.author).split("#", 1)[0]
+                response = requests.get(
+                    f"https://evilinsult.com/generate_insult.php?lang=en&type=json&insult={insultee}")
+                data = response.json()
+                insult = html.unescape(data["insult"])
+                if not is_private:
+                    await message.channel.send(insultee + ", " + insult)
+                else:
+                    await message.author.send(insult)
+            except requests.exceptions.RequestException as e:
+                if not is_private:
+                    await message.channel.send(f"An error occurred: {e}")
+                else:
+                    await message.author.send(f"An error occurred: {e}")
+            except asyncio.TimeoutError:
+                if not is_private:
+                    await message.channel.send("Sorry, you took too long to enter a name!")
+                else:
+                    await message.author.send("Sorry, you took too long to enter a name!")
 
         elif command == "commands":
             # Construct the list of commands and their descriptions
