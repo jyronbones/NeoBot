@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Define Discord key
+# Define Discord bot token
 DISCORD_BOT_TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Set up the OpenAI API credentials
