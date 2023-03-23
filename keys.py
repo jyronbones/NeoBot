@@ -1,9 +1,11 @@
 import os
-
 import openai
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Define Discord key
+DISCORD_BOT_TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Set up the OpenAI API credentials
 model_engine = "text-davinci-003"
@@ -20,3 +22,9 @@ MUSICMATCH_API_KEY = os.getenv("MUSIC_MATCH_API_KEY")
 
 # Define Spoonacular API key
 SPOONACULAR_API_KEY = os.getenv("SPOONACULAR_API_KEY")
+
+# Define Weather Stack API key
+YOUR_WEATHERSTACK_API_KEY = os.getenv("YOUR_WEATHERSTACK_API_KEY")
+
+# Define TMDB API key
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")

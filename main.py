@@ -1,5 +1,4 @@
 import html
-import os
 import discord
 import requests
 import openai
@@ -142,7 +141,7 @@ async def on_message(message):
 
             # Make a request to the Weatherstack API to get the weather information
             params = {
-                "access_key": os.getenv("YOUR_WEATHERSTACK_API_KEY"),
+                "access_key": keys.YOUR_WEATHERSTACK_API_KEY,
                 "query": location_message.content
             }
 
@@ -203,7 +202,7 @@ async def on_message(message):
             # Get a list of popular movies from TMDb API
             url = "https://api.themoviedb.org/3/movie/popular"
             params = {
-                "api_key": os.getenv("TMDB_API_KEY"),
+                "api_key": keys.TMDB_API_KEY,
                 "language": "en-US",
                 "page": 1
             }
@@ -591,7 +590,7 @@ async def on_message(message):
                 return
 
             # Search for recipes using the Spoonacular API
-            url = f"https://api.spoonacular.com/recipes/complexSearch?query={recipe_message.content}&apiKey={os.getenv('SPOONACULAR_API_KEY')}"
+            url = f"https://api.spoonacular.com/recipes/complexSearch?query={recipe_message.content}&apiKey={keys.SPOONACULAR_API_KEY}"
             try:
                 response = requests.get(url).json()
 
@@ -603,7 +602,7 @@ async def on_message(message):
                     recipe_id = recipe["id"]
 
                     # Get information about the recipe using the recipe ID
-                    url = f"https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={os.getenv('SPOONACULAR_API_KEY')}"
+                    url = f"https://api.spoonacular.com/recipes/{recipe_id}/information?apiKey={keys.SPOONACULAR_API_KEY}"
                     response = requests.get(url).json()
 
                     # Get the recipe instructions and ingredients
@@ -753,4 +752,4 @@ async def on_message(message):
 
 
 # Run the bot with your Discord bot token
-client.run(os.getenv("DISCORD_TOKEN"))
+client.run(keys.DISCORD_BOT_TOKEN)
