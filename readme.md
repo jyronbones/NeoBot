@@ -26,11 +26,14 @@ Install the required dependencies using pip:
 <br><br>Create a .env file in the same directory as the bot.py file.
 Add your API keys to the .env file:
 ```
+DISCORD_BOT_TOKEN = <your discord bot token>
 OPENAI_API_KEY = <your OpenAI API key>
 NEWSAPI_KEY = <your NewsAPI key>
 ALPHA_VANTAGE_API_KEY = <your Alpha Vantage API key>
 MUSIC_MATCH_API_KEY = <your Music Match API key>
 SPOONACULAR_API_KEY = <your Spoonacular API key>
+YOUR_WEATHERSTACK_API_KEY = <your Weather Stack API key>
+TMDB_API_KEY = <your TMDB API key>
 ```
 To run the bot, you will need to install the following Python packages:
 <ul>
@@ -72,9 +75,11 @@ This bot was created by Byron Jones. It uses the following APIs:
 <ul>
 <li>OpenAI
 <li>News API
-<li>Alpha Vantage
-<li>Music Match
-<li>Spoonacular
+<li>Alpha Vantage API
+<li>Music Match API
+<li>Spoonacular API
+<li>WeatherStack API
+<li>TMDB API
 <li>Cat Fact API
 <li>Open Trivia DB API
 </ul>
