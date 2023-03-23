@@ -2,30 +2,14 @@ import html
 import os
 import discord
 import requests
-from dotenv import load_dotenv
 import openai
 import asyncio
 import random
 from commands import commands
+import keys
 
-load_dotenv()
 client = discord.Client(intents=discord.Intents.all())
 
-# Set up the OpenAI API credentials
-model_engine = "text-davinci-003"
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Define news API key
-news_api_key = os.getenv("NEWSAPI_KEY")
-
-# Define Alpha Vantage API Key
-ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
-
-# Define Music Match API key
-MUSICMATCH_API_KEY = os.getenv("MUSIC_MATCH_API_KEY")
-
-# Define Spoonacular API key
-SPOONACULAR_API_KEY = os.getenv("SPOONACULAR_API_KEY")
 
 # Define the prefix for the bot commands
 prefix = "!"
@@ -90,7 +74,7 @@ async def on_message(message):
             # Get the response from OpenAI's GPT-3 model
             try:
                 response = openai.Completion.create(
-                    engine=model_engine,
+                    engine=keys.model_engine,
                     prompt=question_message.content,
                     max_tokens=500
                 )
@@ -468,7 +452,7 @@ async def on_message(message):
             # Get the news articles for the specified category
             try:
                 response = requests.get(news_api_url,
-                                        params={"category": category, "apiKey": news_api_key, "language": "en"})
+                                        params={"category": category, "apiKey": keys.news_api_key, "language": "en"})
                 response.raise_for_status()
                 articles = response.json()["articles"]
             except (requests.exceptions.HTTPError, KeyError) as e:
@@ -509,7 +493,7 @@ async def on_message(message):
 
             # Use the Alpha Vantage API to get stock data for the specified symbol
             stock_symbol = stock_message.content.upper()
-            api_url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={stock_symbol}&apikey={ALPHA_VANTAGE_API_KEY}"
+            api_url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={stock_symbol}&apikey={keys.ALPHA_VANTAGE_API_KEY}"
             try:
                 response = requests.get(api_url)
                 response.raise_for_status()
@@ -558,7 +542,7 @@ async def on_message(message):
 
             # Use the Musicmatch API to search for a song with the given lyrics
             lyrics = lyrics_message.content
-            api_url = f"http://api.musixmatch.com/ws/1.1/track.search?q_lyrics={lyrics}&apikey={MUSICMATCH_API_KEY}"
+            api_url = f"http://api.musixmatch.com/ws/1.1/track.search?q_lyrics={lyrics}&apikey={keys.MUSICMATCH_API_KEY}"
             try:
                 response = requests.get(api_url)
                 response.raise_for_status()
@@ -691,7 +675,7 @@ async def on_message(message):
             # Get the lyrics of the song using the Musixmatch API
             try:
                 url = f"https://api.musixmatch.com/ws/1.1/track.search?q_track={song_name_message.content}&page_size" \
-                      f"=1&s_track_rating=desc&apikey={MUSICMATCH_API_KEY}"
+                      f"=1&s_track_rating=desc&apikey={keys.MUSICMATCH_API_KEY}"
                 response = requests.get(url)
                 data = response.json()
                 track_list = data["message"]["body"]["track_list"]
@@ -703,7 +687,7 @@ async def on_message(message):
                         await message.author.send(f"Sorry, I couldn't find the lyrics for {song_name_message.content}!")
                     return
                 track_id = track_list[0]["track"]["track_id"]
-                url = f"https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id={track_id}&apikey={MUSICMATCH_API_KEY}"
+                url = f"https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id={track_id}&apikey={keys.MUSICMATCH_API_KEY}"
                 response = requests.get(url)
                 data = response.json()
                 lyrics = data["message"]["body"]["lyrics"]["lyrics_body"].replace("** This Lyrics is NOT for Commercial use **", "")
