@@ -3,8 +3,11 @@ This is a Python-based Discord chatbot that is designed to perform a number of t
 
 <h2>Table of Contents</h2>
 <ul>
-  <li><a href="[url](https://github.com/jyronbones/NeoBot#features)">Features</a></li>
-  <li><a href="https://github.com/jyronbones/NeoBot#prerequisites">Features</a></li>
+  <li><a href="https://github.com/jyronbones/NeoBot#features">Features</a></li>
+  <li><a href="https://github.com/jyronbones/NeoBot#prerequisites">Prerequisites</a></li>
+  <li><a href="https://github.com/jyronbones/NeoBot#installation">Installation</a></li>
+  <li><a href="https://github.com/jyronbones/NeoBot#usage">Usage</a></li>
+  <li><a href="https://github.com/jyronbones/NeoBot#credits">Credits</a></li>
 
 
 ## Features
