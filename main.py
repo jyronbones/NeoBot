@@ -567,6 +567,7 @@ async def on_message(message):
                 await message.author.send(song_data)
 
         elif command == "recipe":
+            food = ''
             # Ask the user for the recipe they want to search for
             if not is_private:
                 await message.channel.send("What recipe do you want to search for?")
@@ -588,7 +589,7 @@ async def on_message(message):
                 else:
                     await message.author.send("Sorry, you took too long to enter a recipe!")
                 return
-
+            food = recipe_message.content
             # Search for recipes using the Spoonacular API
             url = f"https://api.spoonacular.com/recipes/complexSearch?query={recipe_message.content}&apiKey={keys.SPOONACULAR_API_KEY}"
             try:
@@ -630,6 +631,11 @@ async def on_message(message):
                     await message.channel.send(f"{e}")
                 else:
                     await message.author.send(f"{e}")
+            except discord.errors.HTTPException as ee:
+                if not is_private:
+                    await message.channel.send(f"Sorry the recipe for {food} is too long (2000 word max)")
+                else:
+                    await message.channel.send(f"Sorry the recipe for {food} is too long (2000 word max)")
 
         elif command == "poem":
             # Get a random poem from the PoetryDB API
@@ -715,7 +721,7 @@ async def on_message(message):
                         prefix)
                 )
                 insultee = response.content
-                if '<@1086521876156776548>' in insultee:
+                if '<@1086521876156776548>' or 'neobot' in insultee.lower():
                     insultee = str(message.author).split("#", 1)[0]
                 response = requests.get(
                     f"https://evilinsult.com/generate_insult.php?lang=en&type=json&insult={insultee}")
