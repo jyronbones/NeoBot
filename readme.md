@@ -1,4 +1,4 @@
-<h1>Discord Bot</h1>
+<h1>Neobot</h1>
 This is a Python-based Discord chatbot that is designed to perform a number of tasks, such as providing trivia questions, getting stock data, and recommending movies or recipes.
 
 <h2>Table of Contents</h2>
