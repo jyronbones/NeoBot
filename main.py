@@ -188,16 +188,6 @@ async def on_message(message):
                 else:
                     await message.author.send("An error occurred while fetching the joke.")
 
-        elif command == "gaydetector":
-            if not is_private:
-                sticker = discord.File('hazed.png', filename='hazed.png')
-                await message.channel.send(file=sticker)
-                await message.channel.send(f"This picture confirms Dom is truly gay.")
-            else:
-                sticker = discord.File('hazed.png', filename='hazed.png')
-                await message.channel.send(file=sticker)
-                await message.author.send(f"This picture confirms Dom is truly gay.")
-
         elif command == "movie":
             # Get a list of popular movies from TMDb API
             url = "https://api.themoviedb.org/3/movie/popular"
