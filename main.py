@@ -68,38 +68,32 @@ async def on_message(message):
                 await target.send(timeout_message)
                 return
 
-            # Define the maximum number of retries
             max_retries = 5
-            # Initialize the retry count
             retry_count = 0
 
             while retry_count < max_retries:
                 try:
-                    # Try to make a request to OpenAI's GPT-3 model
                     response = openai.ChatCompletion.create(
-                        model=keys.model_engine,  # This should be "gpt-3.5-turbo"
+                        model=keys.model_engine,
                         messages=[
                             {"role": "system", "content": "You are a helpful assistant."},
                             {"role": "user", "content": question_message.content},
                         ]
                     )
                     await target.send(response['choices'][0]['message']['content'])
-                    break  # Break out of the loop if successful
+                    break
                 except openai.error.RateLimitError:
-                    # Handle rate limit error by waiting and then retrying
                     wait_time = (2 ** retry_count) + 1
                     time.sleep(wait_time)
                     retry_count += 1
                 except openai.error.OpenAIError as e:
-                    # Handle OpenAI errors
                     error_message = f"Encountered an error while processing your request: {e}"
                     await target.send(error_message)
-                    break  # If it's a non-retriable error, break out of the loop
+                    break 
                 except Exception as e:
-                    # Handle other unforeseen errors
                     error_message = f"An unexpected error occurred: {e}"
                     await target.send(error_message)
-                    break  # If it's an unexpected error, break out of the loop
+                    break
 
 
         elif command == "roll":
