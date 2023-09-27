@@ -8,7 +8,7 @@ load_dotenv()
 DISCORD_BOT_TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Set up the OpenAI API credentials
-model_engine = "text-davinci-003"
+model_engine = "gpt-3.5-turbo"
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Define news API key

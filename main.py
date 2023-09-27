@@ -1,4 +1,6 @@
 import html
+from datetime import time
+
 import discord
 import requests
 import openai
@@ -49,10 +51,8 @@ async def on_message(message):
 
         if command == "question":
             # Send a prompt asking the user to ask a question
-            if not is_private:
-                await message.channel.send("Please ask me a question!")
-            else:
-                await message.author.send("Please ask me a question!")
+            target = message.channel if not is_private else message.author
+            await target.send("Please ask me a question!")
 
             # Wait for the user to respond with a question
             try:
@@ -64,28 +64,43 @@ async def on_message(message):
                         prefix)
                 )
             except asyncio.TimeoutError:
-                if not is_private:
-                    await message.channel.send("Sorry, you took too long to ask a question!")
-                else:
-                    await message.author.send("Sorry, you took too long to ask a question!")
+                timeout_message = "Sorry, you took too long to ask a question!"
+                await target.send(timeout_message)
                 return
 
-            # Get the response from OpenAI's GPT-3 model
-            try:
-                response = openai.Completion.create(
-                    engine=keys.model_engine,
-                    prompt=question_message.content,
-                    max_tokens=500
-                )
-                if not is_private:
-                    await message.channel.send(response.choices[0].text.strip())
-                else:
-                    await message.author.send(response.choices[0].text.strip())
-            except requests.exceptions.HTTPError as e:
-                if not is_private:
-                    await message.channel.send(f"{e}")
-                else:
-                    await message.author.send(f"{e}")
+            # Define the maximum number of retries
+            max_retries = 5
+            # Initialize the retry count
+            retry_count = 0
+
+            while retry_count < max_retries:
+                try:
+                    # Try to make a request to OpenAI's GPT-3 model
+                    response = openai.ChatCompletion.create(
+                        model=keys.model_engine,  # This should be "gpt-3.5-turbo"
+                        messages=[
+                            {"role": "system", "content": "You are a helpful assistant."},
+                            {"role": "user", "content": question_message.content},
+                        ]
+                    )
+                    await target.send(response['choices'][0]['message']['content'])
+                    break  # Break out of the loop if successful
+                except openai.error.RateLimitError:
+                    # Handle rate limit error by waiting and then retrying
+                    wait_time = (2 ** retry_count) + 1
+                    time.sleep(wait_time)
+                    retry_count += 1
+                except openai.error.OpenAIError as e:
+                    # Handle OpenAI errors
+                    error_message = f"Encountered an error while processing your request: {e}"
+                    await target.send(error_message)
+                    break  # If it's a non-retriable error, break out of the loop
+                except Exception as e:
+                    # Handle other unforeseen errors
+                    error_message = f"An unexpected error occurred: {e}"
+                    await target.send(error_message)
+                    break  # If it's an unexpected error, break out of the loop
+
 
         elif command == "roll":
             # Roll a random number between 1 and 6
