@@ -8,7 +8,7 @@ import asyncio
 import random
 from commands import commands
 import keys
-from db import store_message_in_db
+from db import store_message_data
 
 client = discord.Client(intents=discord.Intents.all())
 
@@ -16,7 +16,7 @@ client = discord.Client(intents=discord.Intents.all())
 prefix = "!"
 
 # Define timeout time for user response
-USER_RESPONSE_TIME = 60.0
+USER_RESPONSE_TIME = 120.0
 
 # Define the Open Trivia DB API endpoint and default parameters
 trivia_api_url = 'https://opentdb.com/api.php'
@@ -24,15 +24,6 @@ trivia_params = {
     'amount': 1,  # Get only one question
     'type': 'multiple',  # Get only multiple choice questions
 }
-
-
-def store_message_data(username, server, message, date):
-    username = username.split('#')[0]
-
-    try:
-        store_message_in_db(username, server, message, date)
-    except Exception as e:
-        print(f"Failed to store message data: {e}")
 
 
 @client.event
@@ -47,7 +38,7 @@ async def on_message(message):
 
     if message.guild is not None:
         print(f"{message.author} in server '{message.guild.name}' ({message.channel.name}): {message.content}")
-        store_message_data(str(message.author), str(message.guild.name), message.content,
+        store_message_data(str(message.author), str(message.guild.name), str(message.channel.name), message.content,
                            datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     else:
         print(f"{message.author} sent a private message: {message.content}")
@@ -85,7 +76,7 @@ async def on_message(message):
             while retry_count < max_retries:
                 try:
                     response = openai.ChatCompletion.create(
-                        model=keys.model_engine,
+                        model=keys.MODEL_ENGINE,
                         messages=[
                             {"role": "system", "content": "You are a helpful assistant."},
                             {"role": "user", "content": (question_message.content + "(You must keep your response "
@@ -347,13 +338,15 @@ async def on_message(message):
                             await message.channel.send("\n".join(titles))
                         else:
                             await message.author.send("\n".join(titles))
-                    except requests.exceptions.HTTPError as e:
+                    except requests.exceptions.HTTPError:
                         if not is_private:
                             await message.channel.send(
-                                f"The subreddit you requested, {subreddit}, does not exist. Please try again with a different subreddit.")
+                                f"The subreddit you requested, {subreddit}, does not exist. Please try again with a "
+                                f"different subreddit.")
                         else:
                             await message.author.send(
-                                f"The subreddit you requested, {subreddit}, does not exist. Please try again with a different subreddit.")
+                                f"The subreddit you requested, {subreddit}, does not exist. Please try again with a "
+                                f"different subreddit.")
                 except asyncio.TimeoutError:
                     if not is_private:
                         await message.channel.send("Sorry, you took too long to respond with the number of posts!")
@@ -559,7 +552,6 @@ async def on_message(message):
                 track_list = data["message"]["body"]["track_list"]
                 if not track_list:
                     raise ValueError("No song found with the given lyrics.")
-                track_id = track_list[0]["track"]["track_id"]
                 track_name = track_list[0]["track"]["track_name"]
                 artist_name = track_list[0]["track"]["artist_name"]
             except (requests.exceptions.HTTPError, KeyError, ValueError) as e:
@@ -577,7 +569,6 @@ async def on_message(message):
                 await message.author.send(song_data)
 
         elif command == "recipe":
-            food = ''
             # Ask the user for the recipe they want to search for
             if not is_private:
                 await message.channel.send("What recipe do you want to search for?")
@@ -766,7 +757,6 @@ async def on_message(message):
                 await message.channel.send(command_list)
             else:
                 await message.author.send(command_list)
-
 
 # Run the bot with your Discord bot token
 client.run(keys.DISCORD_BOT_TOKEN)
