@@ -1,6 +1,6 @@
+from datetime import datetime
 import html
-from datetime import time
-
+import time
 import discord
 import requests
 import openai
@@ -8,9 +8,9 @@ import asyncio
 import random
 from commands import commands
 import keys
+from db import store_message_in_db
 
 client = discord.Client(intents=discord.Intents.all())
-
 
 # Define the prefix for the bot commands
 prefix = "!"
@@ -26,6 +26,15 @@ trivia_params = {
 }
 
 
+def store_message_data(username, server, message, date):
+    username = username.split('#')[0]
+
+    try:
+        store_message_in_db(username, server, message, date)
+    except Exception as e:
+        print(f"Failed to store message data: {e}")
+
+
 @client.event
 async def on_ready():
     print(f"Logged in as {client.user}!")
@@ -38,6 +47,8 @@ async def on_message(message):
 
     if message.guild is not None:
         print(f"{message.author} in server '{message.guild.name}' ({message.channel.name}): {message.content}")
+        store_message_data(str(message.author), str(message.guild.name), message.content,
+                           datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     else:
         print(f"{message.author} sent a private message: {message.content}")
 
@@ -77,7 +88,8 @@ async def on_message(message):
                         model=keys.model_engine,
                         messages=[
                             {"role": "system", "content": "You are a helpful assistant."},
-                            {"role": "user", "content": question_message.content},
+                            {"role": "user", "content": (question_message.content + "(You must keep your response "
+                                                                                    "under 2000 characters.")},
                         ]
                     )
                     await target.send(response['choices'][0]['message']['content'])
@@ -89,12 +101,11 @@ async def on_message(message):
                 except openai.error.OpenAIError as e:
                     error_message = f"Encountered an error while processing your request: {e}"
                     await target.send(error_message)
-                    break 
+                    break
                 except Exception as e:
                     error_message = f"An unexpected error occurred: {e}"
                     await target.send(error_message)
                     break
-
 
         elif command == "roll":
             # Roll a random number between 1 and 6
@@ -694,7 +705,8 @@ async def on_message(message):
                 url = f"https://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id={track_id}&apikey={keys.MUSICMATCH_API_KEY}"
                 response = requests.get(url)
                 data = response.json()
-                lyrics = data["message"]["body"]["lyrics"]["lyrics_body"].replace("** This Lyrics is NOT for Commercial use **", "")
+                lyrics = data["message"]["body"]["lyrics"]["lyrics_body"].replace(
+                    "** This Lyrics is NOT for Commercial use **", "")
                 if not is_private:
                     await message.channel.send(lyrics.strip())
                 else:
