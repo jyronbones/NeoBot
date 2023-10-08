@@ -1,5 +1,5 @@
 <h1>Neobot</h1>
-Introducing a versatile Python Discord chatbot. Leveraging OpenAI GPT-3, it offers diverse responses, weather data, humor, and recommendations. Delivers stock updates, news, jokes, and even feline facts.
+Introducing a versatile Python Discord chatbot. Leveraging OpenAI GPT-4, it offers diverse responses, weather data, humor, and recommendations. Delivers stock updates, news, jokes, and even feline facts.
 
 <h2>Table of Contents</h2>
 <ul>
