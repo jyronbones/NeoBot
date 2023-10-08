@@ -8,7 +8,7 @@ import asyncio
 import random
 from commands import commands
 import keys
-from db import store_message_data
+from database.db import store_message_data
 
 client = discord.Client(intents=discord.Intents.all())
 

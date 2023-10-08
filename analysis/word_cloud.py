@@ -2,7 +2,7 @@ import keys
 import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-from db import connect_to_db
+from database.db import connect_to_db
 
 
 def create_word_cloud(servername):
