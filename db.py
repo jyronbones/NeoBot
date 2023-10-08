@@ -1,12 +1,13 @@
 import pyodbc
+from sqlalchemy import create_engine
 
 import keys
 
 DATABASE_CONFIG = {
-    'driver': 'ODBC Driver 17 for SQL Server;',
-    'server': 'LocalHost;',
+    'driver': 'ODBC Driver 17 for SQL Server',
+    'server': keys.DB_SERVER_NAME,
     'database': keys.DISCORD_LOGS_DB,
-    'trusted_connection': 'yes;'
+    'trusted_connection': 'yes'
 }
 
 

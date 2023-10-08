@@ -25,4 +25,4 @@ DISCORD_LOGS_DB = os.getenv("DISCORD_LOGS_DB")
 
 DISCORD_LOGS_TABLE_NAME = os.getenv("DISCORD_LOGS_TABLE_NAME")
 
-DB_SERVER_NAME = os.getenv("localhost")
+DB_SERVER_NAME = os.getenv("DB_SERVER_NAME")
