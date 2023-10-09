@@ -6,7 +6,7 @@ import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
-from commands import actual_commands
+from commands import prefixed_commands
 from database.db import connect_to_db
 
 # Import discord module
@@ -57,7 +57,7 @@ def fetch_data(servername):
     df = pd.DataFrame(data, columns=['message'])
 
     # Filter out messages that match commands
-    df = df[~df['message'].isin(actual_commands)]
+    df = df[~df['message'].isin(prefixed_commands)]
 
     return df
 

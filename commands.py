@@ -1,4 +1,3 @@
-# Define the commands and their descriptions
 commands = {
     "%'command'": "Command to receive a response privately.",
     "catfact": "Get a random cat fact.",
@@ -21,5 +20,4 @@ commands = {
     "wordcloud": "Generate a word cloud from server chat data."
 }
 
-# Create a list of actual commands with '!' prefix
-actual_commands = ['!' + command for command in commands.keys()]
+prefixed_commands = ['!' + command for command in commands.keys()]
