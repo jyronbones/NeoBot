@@ -23,8 +23,7 @@ async def create_word_cloud(servername, channel):
 
     # Check if data is retrieved successfully
     if df.empty:
-        print("No messages retrieved for the specified servername.")
-        return
+        return await channel.send(f"No messages retrieved for {servername}.")
 
     # Generate and save the word cloud plot to a file
     text = ' '.join(df['message'])
