@@ -1,6 +1,4 @@
 import pyodbc
-from sqlalchemy import create_engine
-
 import keys
 
 DATABASE_CONFIG = {

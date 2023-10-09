@@ -1,11 +1,10 @@
 import asyncio
 import io
-from concurrent.futures import ThreadPoolExecutor
 import keys
 import pandas as pd
-from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-
+from concurrent.futures import ThreadPoolExecutor
+from wordcloud import WordCloud
 from commands import prefixed_commands
 from database.db import connect_to_db
 

@@ -1,4 +1,3 @@
-from datetime import datetime
 import html
 import time
 import discord
@@ -6,10 +5,10 @@ import requests
 import openai
 import asyncio
 import random
-
-from analysis.word_cloud import create_word_cloud, send_word_cloud_image
-from commands import commands
 import keys
+from datetime import datetime
+from analysis.word_cloud import create_word_cloud
+from commands import commands
 from database.db import store_message_data
 
 client = discord.Client(intents=discord.Intents.all())
