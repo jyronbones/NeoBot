@@ -6,6 +6,8 @@ import requests
 import openai
 import asyncio
 import random
+
+from analysis.word_cloud import create_word_cloud, send_word_cloud_image
 from commands import commands
 import keys
 from database.db import store_message_data
@@ -743,6 +745,14 @@ async def on_message(message):
                     await message.channel.send("Sorry, you took too long to enter a name!")
                 else:
                     await message.author.send("Sorry, you took too long to enter a name!")
+
+        elif command == "wordcloud":
+            if not is_private:
+                server = message.guild
+                channel = message.channel
+                await create_word_cloud(server, channel)
+            else:
+                await message.author.send("Sorry, you cannot see word clouds in private messages.")
 
         elif command == "commands":
             # Construct the list of commands and their descriptions

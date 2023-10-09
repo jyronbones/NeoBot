@@ -14,6 +14,7 @@ Introducing a versatile Python Discord chatbot. Leveraging OpenAI GPT-4, it offe
 <ul>
 <li>Returns a variety of information based on user requests
 <li>Uses OpenAI GPT-4 to answer user questions
+<li>Generates word clouds from server chat data
 <li>Provides weather data for specified locations
 <li>Returns random jokes and cat facts
 <li>Recommends movies and recipes based on user input
@@ -42,6 +43,9 @@ MUSIC_MATCH_API_KEY = <your Music Match API key>
 SPOONACULAR_API_KEY = <your Spoonacular API key>
 YOUR_WEATHERSTACK_API_KEY = <your Weather Stack API key>
 TMDB_API_KEY = <your TMDB API key>
+DISCORD_LOGS_DB=<your DB name>
+DISCORD_LOGS_TABLE_NAME=<your table name>
+DB_SERVER_NAME=<your DB server name 'LocalHost'>
 ```
 To run the bot, you will need to install the following Python packages:
 <ul>
@@ -63,6 +67,7 @@ The bot supports the following commands:
 <ul>
 <li>%command: Command to receive a response privately.
 <li>catfact: Get a random cat fact.
+<li>wordcloud: Generate a word cloud from server chat data.
 <li>commands: Display a list of available commands.
 <li>define: Get a definition from Urban Dictionary
 <li>joke: Get a random joke.
@@ -90,4 +95,5 @@ This bot was created by Byron Jones. It uses the following APIs:
 <li>TMDB API
 <li>Cat Fact API
 <li>Open Trivia DB API
+</ul>
 </ul>

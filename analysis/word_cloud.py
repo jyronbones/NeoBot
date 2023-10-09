@@ -1,4 +1,5 @@
 import asyncio
+import io
 from concurrent.futures import ThreadPoolExecutor
 import keys
 import pandas as pd
@@ -6,10 +7,13 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from database.db import connect_to_db
 
+# Import discord module
+import discord
+
 executor = ThreadPoolExecutor()
 
 
-async def create_word_cloud(servername):
+async def create_word_cloud(servername, channel):
     loop = asyncio.get_event_loop()
 
     # Run the database operations in a separate thread
@@ -20,12 +24,15 @@ async def create_word_cloud(servername):
         print("No messages retrieved for the specified servername.")
         return
 
-    # Generate and display word cloud
+    # Generate and save the word cloud plot to a file
     text = ' '.join(df['message'])
     wordcloud = WordCloud(background_color='white').generate(text)
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
-    plt.show()
+    plt.savefig('wordcloud.png')  # Save the plot to a file
+
+    # Send the word cloud plot as a Discord message
+    await send_word_cloud_image(channel)
 
 
 def fetch_data(servername):
@@ -48,6 +55,17 @@ def fetch_data(servername):
     return pd.DataFrame(data, columns=['message'])
 
 
-# Run the asynchronous function
-loop = asyncio.get_event_loop()
-loop.run_until_complete(create_word_cloud("TestServer"))
+async def send_word_cloud_image(channel):
+    # Read the image file as bytes
+    with open('wordcloud.png', 'rb') as f:
+        image_bytes = f.read()
+
+    # Create a bytes-like object and send it as a Discord message with an embed
+    image_file = discord.File(io.BytesIO(image_bytes), filename='wordcloud.png')
+
+    # Create an embed message with the image attachment
+    embed = discord.Embed()
+    embed.set_image(url='attachment://wordcloud.png')  # Set the image URL to the attachment
+
+    # Send the embedded message with the image
+    await channel.send(embed=embed, file=image_file)
