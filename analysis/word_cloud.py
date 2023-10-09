@@ -5,6 +5,8 @@ import keys
 import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+
+from commands import actual_commands
 from database.db import connect_to_db
 
 # Import discord module
@@ -51,8 +53,13 @@ def fetch_data(servername):
     cursor.close()
     cnxn.close()
 
-    # Convert the data to a DataFrame and return
-    return pd.DataFrame(data, columns=['message'])
+    # Convert the data to a DataFrame
+    df = pd.DataFrame(data, columns=['message'])
+
+    # Filter out messages that match commands
+    df = df[~df['message'].isin(actual_commands)]
+
+    return df
 
 
 async def send_word_cloud_image(channel):

@@ -1,4 +1,3 @@
-
 # Define the commands and their descriptions
 commands = {
     "%'command'": "Command to receive a response privately.",
@@ -18,5 +17,9 @@ commands = {
     "stock": "Get current stock data.",
     "recipe": "Get recipe for a food.",
     "trivia": "Get a random trivia question",
-    "weather": "Get the current weather for a location."
+    "weather": "Get the current weather for a location.",
+    "wordcloud": "Generate a word cloud from server chat data."
 }
+
+# Create a list of actual commands with '!' prefix
+actual_commands = ['!' + command for command in commands.keys()]
