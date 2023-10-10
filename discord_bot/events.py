@@ -1,5 +1,6 @@
 import asyncio
 import discord
+from analysis.server_stats import handle_serverstats
 from configurations import config
 from datetime import datetime
 from analysis.word_cloud import create_word_cloud
@@ -118,6 +119,9 @@ async def on_message(client, message):
             server = message.guild
             channel = message.channel
             await create_word_cloud(server, channel, is_private)
+
+        elif command == "serverstats":
+            await handle_serverstats(message)
 
         elif command == "commands":
             await handle_commands(commands, config.prefix, message, is_private)
