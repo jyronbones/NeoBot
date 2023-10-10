@@ -40,7 +40,7 @@ async def handle_recipe(client, is_private, message):
             )
 
             recipe_text = f"**{recipe_name}**\n\nIngredients:\n{formatted_ingredients}\n\nInstructions:\n{recipe_instructions}"
-            await target.send(recipe_text[:2000])  # Make sure the message does not exceed Discord's 2000 character limit
+            await target.send(recipe_text[:2000])  # Make sure the message doesn't exceed Discord's 2000-character limit
         else:
             await target.send("No recipes found!")
     except requests.exceptions.HTTPError as e:

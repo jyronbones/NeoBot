@@ -1,10 +1,6 @@
-import discord
 from discord_bot import events
 from configurations import keys
-from configurations.config import discord_intents
-
-
-client = discord.Client(intents=discord_intents)
+from discord_bot.events import client
 
 
 @client.event

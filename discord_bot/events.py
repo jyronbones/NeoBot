@@ -1,4 +1,5 @@
 import asyncio
+import discord
 from configurations import config
 from datetime import datetime
 from analysis.word_cloud import create_word_cloud
@@ -17,10 +18,13 @@ from commands.song import handle_song
 from commands.stock import handle_stock
 from commands.trivia import handle_trivia
 from commands.weather import handle_weather
+from configurations.config import discord_intents
 from database.db import store_message_data
 from commands.joke import handle_joke
 from commands.movie import handle_movie
 from commands.lyrics import handle_lyrics
+
+client = discord.Client(intents=discord_intents)
 
 
 async def on_ready():

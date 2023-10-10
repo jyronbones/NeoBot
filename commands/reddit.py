@@ -31,7 +31,8 @@ async def handle_reddit(client, is_private, message):
 
         if not limit.isdigit() or int(limit) < 1 or int(limit) > 10:
             raise ValueError(
-                "You exceeded the number of posts.\nPlease enter a valid number of posts (1-10).\nTry your command again...")
+                "You exceeded the number of posts.\nPlease enter a valid number of posts (1-10).\nTry your command "
+                "again...")
 
         response = requests.get(
             f"https://www.reddit.com/r/{subreddit}/hot.json?limit={limit}",
