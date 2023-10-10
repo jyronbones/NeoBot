@@ -1,38 +1,45 @@
 import asyncio
 import io
-import keys
+import discord
+from configurations import keys
 import pandas as pd
 import matplotlib.pyplot as plt
 from concurrent.futures import ThreadPoolExecutor
 from wordcloud import WordCloud
-from commands import prefixed_commands
+from commands.commands import prefixed_commands
 from database.db import connect_to_db
-
-# Import discord module
-import discord
+from discord.errors import HTTPException
 
 executor = ThreadPoolExecutor()
 
 
-async def create_word_cloud(servername, channel):
-    loop = asyncio.get_event_loop()
+async def create_word_cloud(servername, channel, is_private):
+    # Check if in private message
+    if is_private:
+        await channel.send("Sorry, you cannot see word clouds in private messages.")
+        return
 
-    # Run the database operations in a separate thread
+    loop = asyncio.get_event_loop()
     df = await loop.run_in_executor(executor, fetch_data, servername)
 
     # Check if data is retrieved successfully
     if df.empty:
         return await channel.send(f"No messages retrieved for {servername}.")
 
-    # Generate and save the word cloud plot to a file
     text = ' '.join(df['message'])
-    wordcloud = WordCloud(background_color='white').generate(text)
+    try:
+        wordcloud = WordCloud(background_color='white').generate(text)
+    except ValueError as e:
+        return await channel.send(f"There is not enough data to generate a word cloud for {servername}.")
+
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
-    plt.savefig('wordcloud.png')  # Save the plot to a file
+    plt.savefig('images/wordcloud.png')  # Save the plot to an "images" directory
 
-    # Send the word cloud plot as a Discord message
-    await send_word_cloud_image(channel)
+    try:
+        await send_word_cloud_image(channel)
+    except HTTPException:
+        await channel.send("Error sending the word cloud image. The image might be too large.")
 
 
 def fetch_data(servername):
@@ -62,7 +69,7 @@ def fetch_data(servername):
 
 async def send_word_cloud_image(channel):
     # Read the image file as bytes
-    with open('wordcloud.png', 'rb') as f:
+    with open('images/wordcloud.png', 'rb') as f:
         image_bytes = f.read()
 
     # Create a bytes-like object and send it as a Discord message with an embed

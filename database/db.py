@@ -1,5 +1,5 @@
 import pyodbc
-import keys
+from configurations import keys
 
 DATABASE_CONFIG = {
     'driver': 'ODBC Driver 17 for SQL Server',
