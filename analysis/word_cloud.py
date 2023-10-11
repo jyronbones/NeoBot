@@ -1,7 +1,7 @@
 import asyncio
 import io
 import discord
-from configurations import keys
+from utilities import keys
 import pandas as pd
 import matplotlib.pyplot as plt
 from concurrent.futures import ThreadPoolExecutor

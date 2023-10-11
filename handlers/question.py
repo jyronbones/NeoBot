@@ -1,6 +1,6 @@
 import openai
 import time
-from configurations import keys
+from utilities import keys
 
 
 async def handle_question(question_message, target):

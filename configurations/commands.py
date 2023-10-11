@@ -17,7 +17,8 @@ commands = {
     "recipe": "Get recipe for a food.",
     "trivia": "Get a random trivia question",
     "weather": "Get the current weather for a location.",
-    "wordcloud": "Generate a word cloud from server chat data."
+    "wordcloud": "Generate a word cloud from server chat data.",
+    "serverstats": "Get an analysis of your server's activity."
 }
 
 prefixed_commands = ['!' + command for command in commands.keys()]

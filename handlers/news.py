@@ -1,6 +1,7 @@
 import asyncio
 import requests
-from configurations import keys, config
+from configurations import config
+from utilities import keys
 
 valid_categories = ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology']
 news_api_url = "https://newsapi.org/v2/top-headlines"
@@ -31,7 +32,7 @@ async def handle_news(client, is_private, message):
     # Get the news articles for the specified category
     try:
         response = requests.get(news_api_url,
-                                params={"category": category, "apiKey": keys.news_api_key, "language": "en"})
+                                params={"category": category, "apiKey": keys.NEWS_API_KEY, "language": "en"})
         response.raise_for_status()
         articles = response.json()["articles"]
     except (requests.exceptions.HTTPError, KeyError) as e:

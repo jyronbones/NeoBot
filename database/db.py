@@ -1,7 +1,7 @@
 import asyncio
 import pyodbc
 from collections import Counter
-from configurations import keys
+from utilities import keys
 from database.message_extractors import extract_mentions, extract_links
 
 DATABASE_CONFIG = {

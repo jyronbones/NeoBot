@@ -1,6 +1,6 @@
 from configurations.config import client
 from discord_bot import events
-from configurations import keys
+from utilities import keys
 
 
 @client.event

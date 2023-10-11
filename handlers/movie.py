@@ -1,6 +1,6 @@
 import requests
 import random
-from configurations import keys
+from utilities import keys
 
 
 async def handle_movie(is_private, message):

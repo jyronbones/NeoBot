@@ -1,6 +1,7 @@
 import asyncio
 import requests
-from configurations import keys, config
+from configurations import config
+from utilities import keys
 
 
 async def handle_weather(client, is_private, message):

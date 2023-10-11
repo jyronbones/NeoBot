@@ -1,5 +1,6 @@
 import requests
-from configurations import keys, config
+from configurations import config
+from utilities import keys
 
 
 async def handle_lyrics(is_private, client, message):
