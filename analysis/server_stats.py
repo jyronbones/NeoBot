@@ -1,5 +1,4 @@
 from discord import File
-
 from analysis.user_growth import plot_user_growth
 from configurations.config import days
 from database.db import get_top_users, get_top_mentioners, get_active_channels, get_total_messages, \
