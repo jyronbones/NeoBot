@@ -56,5 +56,5 @@ async def handle_serverstats(message):
     await message.channel.send(stats_message)
 
     # Sending the image in Discord
-    image = File(image_path, filename="user_growth.png")
+    image = File(image_path, filename="images/user_growth.png")
     await message.channel.send("📈 **User Growth Over Time**", file=image)

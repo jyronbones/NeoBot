@@ -16,7 +16,7 @@ def plot_user_growth(growth_data):
     plt.tight_layout()
 
     # Saving the plot to an image
-    image_path = "user_growth.png"
+    image_path = "images/user_growth.png"
     plt.savefig(image_path)
     plt.close()  # Close the plot to free up memory
 
