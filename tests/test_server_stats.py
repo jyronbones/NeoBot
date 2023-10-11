@@ -34,7 +34,18 @@ async def test_handle_serverstats():
         args, _ = mock_message.channel.send.call_args
         assert ":bar_chart: **Server Statistics for TestServer**" in args[0]
         assert ":envelope: **Total Messages**: 150" in args[0]
-        # ... Add more content checks based on expected output ...
+        assert ":link: **Total Links Shared**: 20" in args[0]
+        assert ":loudspeaker: **Messages with Mentions**: 10" in args[0]
+        assert "⏰ **Busiest Time of Day**: 10:00 - 11:00 on Monday" in args[0]
+        assert "📅 **Busiest Day of the Week**: Monday" in args[0]
+        assert "👥 **Number of Unique Users**: 10" in args[0]
+        assert "📩 **Average Messages per User**: 5.00" in args[0]
+        assert ":trophy: **Top 3 Active Users**:" in args[0]
+        assert ":bust_in_silhouette: user1 - 50 messages" in args[0]
+        assert ":star2: **Top 3 Mentioners**:" in args[0]
+        assert ":loud_sound: **Top 3 Active Channels**:" in args[0]
+        assert "🏆 **Top 3 Most Mentioned Users**:" in args[0]
+        assert "📣 user3 - 3 mentions" in args[0]
 
         # 3. Ensure the function sends the image
         args, kwargs = mock_message.channel.send.call_args_list[1]
