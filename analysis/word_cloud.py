@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from concurrent.futures import ThreadPoolExecutor
 from wordcloud import WordCloud
-from commands.commands import prefixed_commands
+from configurations.commands import prefixed_commands
 from database.db import connect_to_db
 from discord.errors import HTTPException
 

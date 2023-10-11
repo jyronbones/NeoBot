@@ -1,31 +1,27 @@
 import asyncio
-import discord
 from analysis.server_stats import handle_serverstats
 from configurations import config
 from datetime import datetime
 from analysis.word_cloud import create_word_cloud
-from commands.catfact import handle_catfact
-from commands.commands import commands
-from commands.define import handle_define
-from commands.help_commands import handle_commands
-from commands.insult import handle_insult
-from commands.news import handle_news
-from commands.poem import handle_poem
-from commands.question import handle_question
-from commands.recipe import handle_recipe
-from commands.reddit import handle_reddit
-from commands.roll import handle_roll
-from commands.song import handle_song
-from commands.stock import handle_stock
-from commands.trivia import handle_trivia
-from commands.weather import handle_weather
-from configurations.config import discord_intents
+from handlers.catfact import handle_catfact
+from configurations.commands import commands
+from handlers.define import handle_define
+from handlers.help_commands import handle_commands
+from handlers.insult import handle_insult
+from handlers.news import handle_news
+from handlers.poem import handle_poem
+from handlers.question import handle_question
+from handlers.recipe import handle_recipe
+from handlers.reddit import handle_reddit
+from handlers.roll import handle_roll
+from handlers.song import handle_song
+from handlers.stock import handle_stock
+from handlers.trivia import handle_trivia
+from handlers.weather import handle_weather
 from database.db import store_message_data
-from commands.joke import handle_joke
-from commands.movie import handle_movie
-from commands.lyrics import handle_lyrics
-
-client = discord.Client(intents=discord_intents)
+from handlers.joke import handle_joke
+from handlers.movie import handle_movie
+from handlers.lyrics import handle_lyrics
 
 
 async def on_ready():
@@ -38,8 +34,13 @@ async def on_message(client, message):
 
     if message.guild is not None:
         print(f"{message.author} in server '{message.guild.name}' ({message.channel.name}): {message.content}")
-        store_message_data(str(message.author), str(message.guild.name), str(message.channel.name), message.content,
-                           datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        await store_message_data(
+            str(message.author),
+            str(message.guild.name),
+            str(message.channel.name),
+            message.content,
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        )
     else:
         print(f"{message.author} sent a private message: {message.content}")
 
