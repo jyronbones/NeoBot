@@ -11,3 +11,13 @@ discord_intents = discord.Intents.all()
 
 # Initialize the Discord client with specific intents for event handling and data access
 client = discord.Client(intents=discord_intents)
+
+days = {
+    1: "Sunday",
+    2: "Monday",
+    3: "Tuesday",
+    4: "Wednesday",
+    5: "Thursday",
+    6: "Friday",
+    7: "Saturday"
+}
