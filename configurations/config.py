@@ -1,6 +1,6 @@
 import discord
 
-# Define the prefix for the bot handlers
+# Define the prefix for the bot commands
 prefix = "!"
 
 # Define timeout time for user response

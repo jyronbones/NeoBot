@@ -1,7 +1,7 @@
 commands = {
     "%'command'": "Command to receive a response privately.",
     "catfact": "Get a random cat fact.",
-    "handlers": "Display a list of available handlers.",
+    "handlers": "Display a list of available commands.",
     "define": "Get a definition from Urban Dictionary.",
     "insult": "Insults a user.",
     "joke": "Get a random joke.",

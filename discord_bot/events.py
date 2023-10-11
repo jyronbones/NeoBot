@@ -124,5 +124,5 @@ async def on_message(client, message):
         elif command == "serverstats":
             await handle_serverstats(message)
 
-        elif command == "handlers":
+        elif command == "commands":
             await handle_commands(commands, config.prefix, message, is_private)
