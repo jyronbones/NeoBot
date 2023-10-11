@@ -49,9 +49,9 @@ async def handle_serverstats(message):
     for i, channel in enumerate(active_channels_data, 1):
         stats_message += f"{i}. :speech_balloon: {channel[0]} - {channel[1]} messages\n"
 
-    # stats_message += "\n\n🏆 **Top 3 Most Mentioned Users**:\n"
-    # for i, user in enumerate(most_mentioned_users, 1):
-    #     stats_message += f"{i}. 📣 {user[0]} - {user[1]} mentions\n"
+    stats_message += "\n\n🏆 **Top 3 Most Mentioned Users**:\n"
+    for i, user in enumerate(most_mentioned_users, 1):
+        stats_message += f"{i}. 📣 {user[0]} - {user[1]} mentions\n"
 
     await message.channel.send(stats_message)
 
