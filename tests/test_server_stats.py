@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock, patch
-from analysis.server_stats import handle_serverstats
+from ..analysis.server_stats import handle_serverstats
 
 
 @pytest.mark.asyncio
