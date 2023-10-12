@@ -1,5 +1,5 @@
 import pandas as pd
-from configurations.commands import prefixed_commands
+from utilities.commands import prefixed_commands
 from database.db import connect_to_db
 from utilities import keys
 

@@ -4,7 +4,7 @@ from configurations import config
 from datetime import datetime
 from analysis.word_cloud import create_word_cloud
 from handlers.catfact import handle_catfact
-from configurations.commands import commands
+from utilities.commands import commands
 from handlers.define import handle_define
 from handlers.help_commands import handle_commands
 from handlers.insult import handle_insult
