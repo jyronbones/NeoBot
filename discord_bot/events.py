@@ -36,6 +36,7 @@ async def on_message(client, message):
         print(f"{message.author} in server '{message.guild.name}' ({message.channel.name}): {message.content}")
         await store_message_data(
             str(message.author),
+            str(message.author.id),
             str(message.guild.name),
             str(message.channel.name),
             message.content,

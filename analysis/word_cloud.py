@@ -9,8 +9,18 @@ from wordcloud import WordCloud
 from configurations.commands import prefixed_commands
 from database.db import connect_to_db
 from discord.errors import HTTPException
+from database.message_extractors import extract_mentions, extract_links
 
 executor = ThreadPoolExecutor()
+
+
+def clean_message(message):
+    """Clean message by removing mentions and links"""
+    for mention in extract_mentions(message):
+        message = message.replace(mention, '')
+    for link in extract_links(message):
+        message = message.replace(link, '')
+    return message
 
 
 async def create_word_cloud(servername, channel, is_private):
@@ -26,10 +36,13 @@ async def create_word_cloud(servername, channel, is_private):
     if df.empty:
         return await channel.send(f"No messages retrieved for {servername}.")
 
+    # Clean messages
+    df['message'] = df['message'].apply(clean_message)
+
     text = ' '.join(df['message'])
     try:
         wordcloud = WordCloud(background_color='white').generate(text)
-    except ValueError as e:
+    except ValueError:
         return await channel.send(f"There is not enough data to generate a word cloud for {servername}.")
 
     plt.imshow(wordcloud, interpolation='bilinear')
