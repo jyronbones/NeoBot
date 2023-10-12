@@ -65,22 +65,24 @@ Run the bot using:
 
 The bot supports the following commands:
 <ul>
-<li>%command: Command to receive a response privately.
-<li>catfact: Get a random cat fact.
-<li>wordcloud: Generate a word cloud from server chat data.
-<li>commands: Display a list of available commands.
-<li>define: Get a definition from Urban Dictionary
-<li>joke: Get a random joke.
-<li>movie: Get a random movie recommendation.
-<li>news: Get recent news articles.
-<li>question: Ask the bot a question and get a response.
-<li>reddit: Get a specified number of the most recent posts (max 10) from a given subreddit.
-<li>roll: Roll a random number between 1 and 6.
-<li>song: Get a song title based on lyrics.
-<li>stock: Get current stock data.
-<li>recipe: Get recipe for a food.
-<li>trivia: Get a random trivia question
-<li>weather: Get the current weather for a location.
+<li>%command: Command to receive a response privately.</li>
+<li>catfact: Get a random cat fact.</li>
+<li>wordcloud: Generate a word cloud from server chat data.</li>
+<li>commands: Display a list of available commands.</li>
+<li>define: Get a definition from Urban Dictionary.</li>
+<li>joke: Get a random joke.</li>
+<li>movie: Get a random movie recommendation.</li>
+<li>news: Get recent news articles.</li>
+<li>question: Ask the bot a question and get a response.</li>
+<li>reddit: Get a specified number of the most recent posts (max 10) from a given subreddit.</li>
+<li>roll: Roll a random number between 1 and 6.</li>
+<li>song: Get a song title based on lyrics.</li>
+<li>stock: Get current stock data.</li>
+<li>recipe: Get recipe for a food.</li>
+<li>trivia: Get a random trivia question</li>
+<li>weather: Get the current weather for a location.</li>
+<li>wordcloud: Generate a word cloud from server chat data.</li>
+<li>serverstats: Display statistics about the server's activity.</li>
 </ul>
 
 ## Credits
