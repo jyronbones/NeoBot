@@ -7,8 +7,12 @@ from database.db import get_top_users, get_top_mentioners, get_active_channels, 
 
 
 async def handle_serverstats(message):
-    server_name = message.guild.name
+    # Check if it's a DM
+    if message.guild is None:
+        await message.channel.send("Sorry, I cannot fulfill this request in a DM 😞.")
+        return
 
+    server_name = message.guild.name
     top_users_data = get_top_users(server_name)
     top_mentions_data = get_top_mentioners(server_name)
     active_channels_data = get_active_channels(server_name)
