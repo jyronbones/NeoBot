@@ -7,7 +7,6 @@ from database.db import get_top_users, get_top_mentioners, get_active_channels, 
 
 
 async def handle_serverstats(message):
-    # Check if it's a DM
     if message.guild is None:
         await message.channel.send("Sorry, I cannot fulfill this request in a DM 😞.")
         return
@@ -48,13 +47,13 @@ async def handle_serverstats(message):
     for i, mention in enumerate(top_mentions_data, 1):
         stats_message += f"{i}. :busts_in_silhouette: {mention[0]} - {mention[1]} times\n"
 
-    stats_message += "\n\n:loud_sound: **Top 3 Active Channels**:\n"
-    for i, channel in enumerate(active_channels_data, 1):
-        stats_message += f"{i}. :speech_balloon: {channel[0]} - {channel[1]} messages\n"
-
     stats_message += "\n\n🏆 **Top 3 Most Mentioned Users**:\n"
     for i, user in enumerate(most_mentioned_users, 1):
         stats_message += f"{i}. 📣 {user[0]} - {user[1]} mentions\n"
+
+    stats_message += "\n\n:loud_sound: **Top 3 Active Channels**:\n"
+    for i, channel in enumerate(active_channels_data, 1):
+        stats_message += f"{i}. :speech_balloon: {channel[0]} - {channel[1]} messages\n"
 
     await message.channel.send(stats_message)
 

@@ -138,6 +138,8 @@ def get_message_with_mentions_count(servername):
 
 
 def get_most_mentioned_users(servername, limit=3):
+    from database import fetch_data
+
     cnxn, cursor = connect_to_db()
     cursor.execute(
         """
@@ -157,7 +159,9 @@ def get_most_mentioned_users(servername, limit=3):
         mentions_in_row = row[0].split(',')
         mentions.extend(mentions_in_row)
 
-    mention_counts = Counter(mentions)
+    # Convert mentions to usernames
+    mention_usernames = [fetch_data.fetch_username(mention) for mention in mentions if mention]
+    mention_counts = Counter(mention_usernames)
     return mention_counts.most_common(limit)
 
 

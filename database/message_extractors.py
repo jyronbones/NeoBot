@@ -15,3 +15,10 @@ def extract_mentions(message_content):
 def extract_links(message_content):
     links = LINK_PATTERN.findall(message_content)
     return [link for link in links if link]
+
+
+def extract_user_id_from_mention(mention):
+    match = re.search(r'<@(\d+)>', mention)
+    if match:
+        return match.group(1)
+    return None
