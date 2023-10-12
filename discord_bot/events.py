@@ -25,7 +25,7 @@ from handlers.lyrics import handle_lyrics
 
 
 async def on_ready(client):
-    print(f"👍 Log in success as {client.user.name}!")
+    print(f"👍 Login success as {client.user.name}!")
 
 
 async def on_message(client, message):
