@@ -1,13 +1,10 @@
 import asyncio
 import io
 import discord
-from utilities import keys
-import pandas as pd
+from database.word_cloud_data_fetch import fetch_data
 import matplotlib.pyplot as plt
 from concurrent.futures import ThreadPoolExecutor
 from wordcloud import WordCloud
-from configurations.commands import prefixed_commands
-from database.db import connect_to_db
 from discord.errors import HTTPException
 from database.message_extractors import extract_mentions, extract_links
 
@@ -53,31 +50,6 @@ async def create_word_cloud(servername, channel, is_private):
         await send_word_cloud_image(channel)
     except HTTPException:
         await channel.send("Error sending the word cloud image. The image might be too large.")
-
-
-def fetch_data(servername):
-    cnxn, cursor = connect_to_db()
-
-    query = f"""
-    SELECT message
-    FROM {keys.DISCORD_LOGS_TABLE_NAME}
-    WHERE servername='{servername}'
-    """
-
-    cursor.execute(query)
-    rows = cursor.fetchall()
-    data = [row[0] for row in rows]
-
-    cursor.close()
-    cnxn.close()
-
-    # Convert the data to a DataFrame
-    df = pd.DataFrame(data, columns=['message'])
-
-    # Filter out messages that match commands
-    df = df[~df['message'].isin(prefixed_commands)]
-
-    return df
 
 
 async def send_word_cloud_image(channel):
