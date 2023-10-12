@@ -24,8 +24,8 @@ from handlers.movie import handle_movie
 from handlers.lyrics import handle_lyrics
 
 
-async def on_ready():
-    print(f"NeoBot logged in!")
+async def on_ready(client):
+    print(f"👍 Log in success as {client.user.name}!")
 
 
 async def on_message(client, message):

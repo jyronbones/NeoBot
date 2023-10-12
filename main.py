@@ -5,7 +5,7 @@ from utilities import keys
 
 @client.event
 async def on_ready():
-    await events.on_ready()
+    await events.on_ready(client)
 
 
 @client.event
