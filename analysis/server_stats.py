@@ -3,7 +3,7 @@ from analysis.user_growth import plot_user_growth
 from configurations.config import days
 from database.db import get_top_users, get_top_mentioners, get_active_channels, get_total_messages, \
     get_total_links_shared, get_message_with_mentions_count, get_most_mentioned_users, get_busiest_hour, \
-    get_busiest_day, get_unique_users, get_avg_messages_per_user, get_user_growth_over_time
+    get_busiest_day, get_unique_users, get_avg_messages_per_user, get_user_growth_over_time, get_oldest_users
 
 
 async def handle_serverstats(message):
@@ -19,6 +19,7 @@ async def handle_serverstats(message):
     total_links = get_total_links_shared(server_name)
     total_mentions = get_message_with_mentions_count(server_name)
     most_mentioned_users = get_most_mentioned_users(server_name)
+    oldest_users_data = get_oldest_users(server_name)
     busiest_hour = get_busiest_hour(server_name)
     busiest_day = get_busiest_day(server_name)
     unique_users = get_unique_users(server_name)
@@ -50,6 +51,10 @@ async def handle_serverstats(message):
     stats_message += "\n\n🏆 **Top 3 Most Mentioned Users**:\n"
     for i, user in enumerate(most_mentioned_users, 1):
         stats_message += f"{i}. 📣 {user[0]} - {user[1]} mentions\n"
+
+    stats_message += "\n\n👴 **Top 3 Oldest Discord Users**:\n"
+    for i, user in enumerate(oldest_users_data, 1):
+        stats_message += f"{i}. :bust_in_silhouette: {user[0]}\n"
 
     stats_message += "\n\n:loud_sound: **Top 3 Active Channels**:\n"
     for i, channel in enumerate(active_channels_data, 1):

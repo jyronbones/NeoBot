@@ -239,3 +239,22 @@ def get_user_growth_over_time(servername):
     cursor.close()
     cnxn.close()
     return results
+
+
+def get_oldest_users(servername, limit=3):
+    cnxn, cursor = connect_to_db()
+    query = """
+        SELECT TOP (?) username, userid
+        FROM (
+            SELECT DISTINCT username, userid
+            FROM dbo.discord_logs
+            WHERE servername = ? AND ISNUMERIC(userid) = 1
+        ) AS subquery
+        ORDER BY CAST(userid AS BIGINT)
+    """
+    cursor.execute(query, (limit, servername))
+    results = cursor.fetchall()
+    cursor.close()
+    cnxn.close()
+    return results
+
