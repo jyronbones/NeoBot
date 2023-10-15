@@ -12,13 +12,14 @@ Introducing a versatile Python Discord chatbot. Leveraging OpenAI GPT-4, it offe
 
 ## Features
 <ul>
-<li>Returns a variety of information based on user requests
-<li>Uses OpenAI GPT-4 to answer user questions
-<li>Generates word clouds from server chat data
-<li>Provides weather data for specified locations
-<li>Returns random jokes and cat facts
-<li>Recommends movies and recipes based on user input
-<li>Can retrieve current stock data and recent news articles
+<li>Returns a variety of information based on user requests</li>
+<li>Uses OpenAI GPT-4 to answer user questions</li>
+<li>Generates word clouds from server chat data</li>
+<li>Provides weather data for specified locations</li>
+<li>Returns random jokes and cat facts</li>
+<li>Recommends movies and recipes based on user input</li>
+<li>Can retrieve current stock data and recent news articles</li>
+<li>Can generate server stats</li>
 </ul>
 
 ## Prerequisites
