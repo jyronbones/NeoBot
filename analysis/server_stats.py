@@ -1,9 +1,11 @@
 from discord import File
 from analysis.user_growth import plot_user_growth
 from configurations.config import days
-from database.db import get_top_users, get_top_mentioners, get_active_channels, get_total_messages, \
-    get_total_links_shared, get_message_with_mentions_count, get_most_mentioned_users, get_busiest_hour, \
-    get_busiest_day, get_unique_users, get_avg_messages_per_user, get_user_growth_over_time, get_oldest_users
+from database.fetch_server_analysis_data import get_total_messages, get_total_links_shared, get_busiest_hour, \
+    get_busiest_day, get_unique_users, get_avg_messages_per_user_async, get_user_growth_over_time, \
+    get_messages_over_time
+from database.fetch_server_users_analysis_data import get_message_with_mentions_count, get_top_users, \
+    get_top_mentioners, get_active_channels, get_most_mentioned_users, get_oldest_users
 
 
 async def handle_serverstats(message):
@@ -12,19 +14,27 @@ async def handle_serverstats(message):
         return
 
     server_name = message.guild.name
-    top_users_data = get_top_users(server_name)
-    top_mentions_data = get_top_mentioners(server_name)
-    active_channels_data = get_active_channels(server_name)
-    total_messages = get_total_messages(server_name)
-    total_links = get_total_links_shared(server_name)
-    total_mentions = get_message_with_mentions_count(server_name)
-    most_mentioned_users = get_most_mentioned_users(server_name)
-    oldest_users_data = get_oldest_users(server_name)
-    busiest_hour = get_busiest_hour(server_name)
-    busiest_day = get_busiest_day(server_name)
-    unique_users = get_unique_users(server_name)
-    avg_messages_per_user = get_avg_messages_per_user(server_name)
-    user_growth_data = get_user_growth_over_time(server_name)
+
+    # Total server stats
+    total_messages = await get_total_messages(server_name)
+    total_links = await get_total_links_shared(server_name)
+    total_mentions = await get_message_with_mentions_count(server_name)
+    busiest_hour = await get_busiest_hour(server_name)
+    busiest_day = await get_busiest_day(server_name)
+    unique_users = await get_unique_users(server_name)
+    avg_messages_per_user = await get_avg_messages_per_user_async(server_name)
+    daily_messages_over_time = await get_messages_over_time(server_name, "daily")
+    weekly_messages_over_time = await get_messages_over_time(server_name, "weekly")
+    yearly_messages_over_time = await get_messages_over_time(server_name, "yearly")
+
+    user_growth_data = await get_user_growth_over_time(server_name)
+
+    # Top user stats by server
+    top_users_data = await get_top_users(server_name)
+    top_mentions_data = await get_top_mentioners(server_name)
+    active_channels_data = await get_active_channels(server_name)
+    most_mentioned_users = await get_most_mentioned_users(server_name)
+    oldest_users_data = await get_oldest_users(server_name)
 
     # Getting the saved image path
     image_path = plot_user_growth(user_growth_data)
@@ -32,14 +42,29 @@ async def handle_serverstats(message):
     # Format the fetched data into a message
     stats_message = f":bar_chart: **Server Statistics for {server_name}**\n"
 
+    # Server wide stats
     stats_message += f"\n:envelope: **Total Messages**: {total_messages}"
     stats_message += f"\n:link: **Total Links Shared**: {total_links}"
     stats_message += f"\n:loudspeaker: **Messages with Mentions**: {total_mentions}"
-    stats_message += f"\n⏰ **Busiest Time of Day**: {busiest_hour[1]}:00 - {busiest_hour[1] + 1}:00 on {busiest_hour[0]}"
+    stats_message += f"\n⏰ **Busiest Time of Day**: {busiest_hour[1]}:00 - {busiest_hour[1] + 1}:00"
     stats_message += f"\n📅 **Busiest Day of the Week**: {days[busiest_day[0]]}"
     stats_message += f"\n👥 **Number of Unique Users**: {unique_users}"
     stats_message += f"\n📩 **Average Messages per User**: {avg_messages_per_user:.2f}"
 
+    # Calculate the total messages over the specified periods
+    daily_total = sum([date_count[1] for date_count in daily_messages_over_time[:1]])
+    weekly_total = sum([date_count[1] for date_count in weekly_messages_over_time[:7]])
+    monthly_total = sum([date_count[1] for date_count in daily_messages_over_time[:30]])
+    yearly_total = sum([date_count[1] for date_count in yearly_messages_over_time[:1]])
+
+    # Format the message counts for each interval
+    stats_message += "\n📆 **Server Messages Over Time**:\n"
+    stats_message += f"\t\t\t\t\t\t**Daily Messages:** {daily_total}\n"
+    stats_message += f"\t\t\t\t\t\t**Weekly Messages:** {weekly_total}\n"
+    stats_message += f"\t\t\t\t\t\t**Monthly Messages:** {monthly_total}\n"
+    stats_message += f"\t\t\t\t\t\t**Yearly Messages:** {yearly_total}\n"
+
+    # User stats per server
     stats_message += "\n\n:trophy: **Top 3 Active Users**:\n"
     for i, user in enumerate(top_users_data, 1):
         stats_message += f"{i}. :bust_in_silhouette: {user[0]} - {user[1]} messages\n"
