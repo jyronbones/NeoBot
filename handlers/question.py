@@ -13,8 +13,8 @@ async def handle_question(question_message, target):
                 model=keys.MODEL_ENGINE,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": (question_message.content + "(You must keep your response under 2000 "
-                                                                            "characters.")},
+                    {"role": "user", "content": (question_message.content + "(It is crucial you keep your response "
+                                                                            "under 1999 characters.")},
                 ]
             )
             await target.send(response['choices'][0]['message']['content'])

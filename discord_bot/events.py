@@ -120,7 +120,7 @@ async def on_message(client, message):
         elif command == "wordcloud":
             server = message.guild
             channel = message.channel
-            await create_word_cloud(server, channel, is_private)
+            await create_word_cloud(server.name, channel, is_private)
 
         elif command == "serverstats":
             await handle_serverstats(message)
