@@ -3,6 +3,13 @@ import openai
 from utilities import keys
 
 
+async def send_message_in_chunks(target, message_content):
+    max_chunk_size = 1999
+    for i in range(0, len(message_content), max_chunk_size):
+        chunk = message_content[i:i + max_chunk_size]
+        await target.send(chunk)
+
+
 async def handle_question(question_message, target):
     max_retries = 5
     retry_count = 0
@@ -14,16 +21,20 @@ async def handle_question(question_message, target):
             model=keys.MODEL_ENGINE,
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": (question_message.content + "(It is crucial you keep your response "
-                                                                        "under 1999 characters in length.")},
+                {"role": "user", "content": question_message.content + "(It is crucial you keep your response under "
+                                                                       "1999 characters in length.)"},
             ]
         )
 
-        # Limit the response to 2000 characters
-        response_content = response['choices'][0]['message']['content'][:2000]
+        # Check if there are choices in the response
+        if 'choices' in response and response['choices']:
+            # Get the response content
+            response_content = response['choices'][0]['message']['content']
 
-        # Send the limited response to the user
-        await target.send(response_content)
+            # Send the response in chunks of 2000 characters
+            await send_message_in_chunks(target, response_content)
+        else:
+            await target.send("Sorry, I couldn't generate a response at the moment.")
 
     except openai.error.RateLimitError:
         while retry_count < max_retries:

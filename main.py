@@ -1,3 +1,4 @@
+import asyncio
 from configurations.config import client
 from discord_bot import events
 from utilities import keys
@@ -13,4 +14,4 @@ async def on_message(message):
     await events.on_message(client, message)
 
 if __name__ == "__main__":
-    client.run(keys.DISCORD_BOT_TOKEN)
+    asyncio.run(client.start(keys.DISCORD_BOT_TOKEN))
