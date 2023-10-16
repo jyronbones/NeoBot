@@ -76,6 +76,7 @@ async def on_message(client, message):
                 )
             except asyncio.TimeoutError:
                 timeout_message = "Sorry, you took too long to ask a question!"
+                is_answering_question = False
                 await target.send(timeout_message)
                 return
 

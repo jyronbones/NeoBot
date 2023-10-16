@@ -14,4 +14,9 @@ async def on_message(message):
     await events.on_message(client, message)
 
 if __name__ == "__main__":
-    asyncio.run(client.start(keys.DISCORD_BOT_TOKEN))
+    try:
+        asyncio.run(client.start(keys.DISCORD_BOT_TOKEN))
+    except KeyboardInterrupt:
+        print("Bot shutting down...")
+        asyncio.run(client.close())
+        print("Bot is now offline.")

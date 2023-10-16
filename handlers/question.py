@@ -14,7 +14,7 @@ async def handle_question(question_message, target):
     max_retries = 5
     retry_count = 0
 
-    working_message = await target.send("Working on your question...⏳")
+    await target.send("Working on your question...⏳")
 
     try:
         response = openai.ChatCompletion.create(
@@ -30,7 +30,7 @@ async def handle_question(question_message, target):
             # Get the response content
             response_content = response['choices'][0]['message']['content']
 
-            # Send the response in chunks of 2000 characters
+            # Send the response in chunks of 1999 characters to resolve Discord's message length limit
             await send_message_in_chunks(target, response_content)
         else:
             await target.send("Sorry, I couldn't generate a response at the moment.")
