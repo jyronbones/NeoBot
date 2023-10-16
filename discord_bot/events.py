@@ -23,12 +23,16 @@ from handlers.joke import handle_joke
 from handlers.movie import handle_movie
 from handlers.lyrics import handle_lyrics
 
+is_answering_question = False
+
 
 async def on_ready(client):
     print(f"👍 Login success as {client.user.name}!")
 
 
 async def on_message(client, message):
+    global is_answering_question
+
     if message.author == client.user:
         return
 
@@ -53,11 +57,16 @@ async def on_message(client, message):
         else:
             command = message.content[len(config.prefix):].strip()
 
+        if is_answering_question:
+            await message.channel.send("I'm currently answering a question. Please wait.")
+            return
+
         if command == "question":
             target = message.channel if not is_private else message.author
             await target.send("Please ask me a question!")
 
             try:
+                is_answering_question = True
                 question_message = await client.wait_for(
                     "message",
                     timeout=config.USER_RESPONSE_TIME,
@@ -71,6 +80,7 @@ async def on_message(client, message):
                 return
 
             await handle_question(question_message, target)
+            is_answering_question = False
 
         elif command == "roll":
             await handle_roll(is_private, message)
