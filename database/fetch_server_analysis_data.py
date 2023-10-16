@@ -64,7 +64,7 @@ def _get_busiest_hour(servername):
     cnxn, cursor = connect_to_db()
     cursor.execute(
         """
-        SELECT DATEPART(HOUR, timestamp) as hour, COUNT(*) as count 
+        SELECT TOP 1 DATEPART(HOUR, timestamp) as hour, COUNT(*) as count 
         FROM dbo.discord_logs 
         WHERE servername = ? 
         GROUP BY DATEPART(HOUR, timestamp) 
@@ -72,10 +72,15 @@ def _get_busiest_hour(servername):
         """,
         (servername,)
     )
-    results = cursor.fetchone()
+    result = cursor.fetchone()
     cursor.close()
     cnxn.close()
-    return results
+
+    if result:
+        hour = result[0]
+        if 0 <= hour <= 23:
+            return hour
+    return None
 
 
 async def get_busiest_day(servername):

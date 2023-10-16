@@ -46,7 +46,12 @@ async def handle_serverstats(message):
     stats_message += f"\n:envelope: **Total Messages**: {total_messages}"
     stats_message += f"\n:link: **Total Links Shared**: {total_links}"
     stats_message += f"\n:loudspeaker: **Messages with Mentions**: {total_mentions}"
-    stats_message += f"\n⏰ **Busiest Time of Day**: {busiest_hour[1]}:00 - {busiest_hour[1] + 1}:00"
+
+    if busiest_hour is not None:
+        stats_message += f"\n⏰ **Busiest Time of Day**: {busiest_hour}:00 - {busiest_hour + 1}:00"
+    else:
+        stats_message += "\n⏰ **Busiest Time of Day**: Data not available"
+
     stats_message += f"\n📅 **Busiest Day of the Week**: {days[busiest_day[0]]}"
     stats_message += f"\n👥 **Number of Unique Users**: {unique_users}"
     stats_message += f"\n📩 **Average Messages per User**: {avg_messages_per_user:.2f}"
