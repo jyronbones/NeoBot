@@ -20,9 +20,8 @@ async def handle_question(question_message, target):
         response = openai.ChatCompletion.create(
             model=keys.MODEL_ENGINE,
             messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": question_message.content + "(It is crucial you keep your response under "
-                                                                       "1999 characters in length.)"},
+                {"role": "system", "content": "You are an expert assistant knowledgeable in a wide range of subjects."},
+                {"role": "user", "content": question_message.content},
             ]
         )
 
