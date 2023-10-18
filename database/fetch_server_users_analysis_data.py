@@ -252,3 +252,34 @@ def _get_users_with_most_links(servername, limit):
         top_users.append((user, total_links, most_common_domain, domain_count))
 
     return top_users
+
+
+async def get_top_topic_starters(servername, limit=3, time_frame_minutes=10):
+    return await async_db_executor(_get_top_topic_starters, servername, limit, time_frame_minutes)
+
+
+def _get_top_topic_starters(servername, limit, time_frame_minutes):
+    cnxn, cursor = connect_to_db()
+
+    # A self-join query that counts the number of subsequent messages within the given time frame for each message
+    query = """
+    SELECT initiator.username, COUNT(follower.username) as conversation_count
+    FROM dbo.discord_logs AS initiator
+    JOIN dbo.discord_logs AS follower ON initiator.servername = follower.servername
+                                      AND initiator.channel = follower.channel
+                                      AND initiator.timestamp < follower.timestamp
+                                      AND DATEADD(MINUTE, ?, initiator.timestamp) > follower.timestamp
+                                      AND initiator.username <> follower.username
+    WHERE initiator.servername = ?
+    GROUP BY initiator.username
+    ORDER BY conversation_count DESC
+    """
+
+    cursor.execute(query, (time_frame_minutes, servername))
+
+    results = cursor.fetchmany(limit)
+
+    cursor.close()
+    cnxn.close()
+
+    return results
