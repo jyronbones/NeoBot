@@ -23,7 +23,7 @@ from handlers.joke import handle_joke
 from handlers.movie import handle_movie
 from handlers.lyrics import handle_lyrics
 
-is_answering_question = False
+currently_answering = set()
 
 
 async def on_ready(client):
@@ -31,9 +31,12 @@ async def on_ready(client):
 
 
 async def on_message(client, message):
-    global is_answering_question
 
     if message.author == client.user:
+        return
+
+    # If the user is already in a session, return without processing commands.
+    if message.author.id in currently_answering:
         return
 
     if message.guild is not None:
@@ -57,16 +60,14 @@ async def on_message(client, message):
         else:
             command = message.content[len(config.prefix):].strip()
 
-        if is_answering_question:
-            await message.channel.send("I'm currently answering a question. Please wait.")
-            return
-
         if command == "question":
             target = message.channel if not is_private else message.author
             await target.send("Please ask me a question!")
 
+            # Add the user's ID to the currently_answering set.
+            currently_answering.add(message.author.id)
+
             try:
-                is_answering_question = True
                 question_message = await client.wait_for(
                     "message",
                     timeout=config.USER_RESPONSE_TIME,
@@ -74,14 +75,13 @@ async def on_message(client, message):
                         m: m.author == message.author and m.channel == message.channel and not m.content.startswith(
                         config.prefix)
                 )
+                await handle_question(question_message, target)
             except asyncio.TimeoutError:
                 timeout_message = "Sorry, you took too long to ask a question!"
-                is_answering_question = False
                 await target.send(timeout_message)
-                return
-
-            await handle_question(question_message, target)
-            is_answering_question = False
+            finally:
+                # Ensure that the user's ID is removed from the set, regardless of what happened.
+                currently_answering.discard(message.author.id)
 
         elif command == "roll":
             await handle_roll(is_private, message)
