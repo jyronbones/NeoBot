@@ -43,22 +43,20 @@ async def handle_serverstats(message):
     # Getting the saved image path
     image_path = plot_user_growth(user_growth_data)
 
-    # Format the fetched data into a message
-    stats_message = f":bar_chart: **Server Statistics for {server_name}**\n"
-
-    # Server wide stats
-    stats_message += f"\n:envelope: **Total Messages**: {total_messages}"
-    stats_message += f"\n:link: **Total Links Shared**: {total_links}"
-    stats_message += f"\n:loudspeaker: **Messages with Mentions**: {total_mentions}"
+    # Server-wide statistics
+    server_stats_message = f":bar_chart: **Server Statistics for {server_name}**\n"
+    server_stats_message += f"\n:envelope: **Total Messages**: {total_messages}"
+    server_stats_message += f"\n:link: **Total Links Shared**: {total_links}"
+    server_stats_message += f"\n:loudspeaker: **Messages with Mentions**: {total_mentions}"
 
     if busiest_hour is not None:
-        stats_message += f"\n⏰ **Busiest Time of Day**: {busiest_hour}:00 - {busiest_hour + 1}:00"
+        server_stats_message += f"\n⏰ **Busiest Time of Day**: {busiest_hour}:00 - {busiest_hour + 1}:00"
     else:
-        stats_message += "\n⏰ **Busiest Time of Day**: Data not available"
+        server_stats_message += "\n⏰ **Busiest Time of Day**: Data not available"
 
-    stats_message += f"\n📅 **Busiest Day of the Week**: {days[busiest_day[0]]}"
-    stats_message += f"\n👥 **Number of Unique Users**: {unique_users}"
-    stats_message += f"\n📩 **Average Messages per User**: {avg_messages_per_user:.2f}"
+    server_stats_message += f"\n📅 **Busiest Day of the Week**: {days[busiest_day[0]]}"
+    server_stats_message += f"\n👥 **Number of Unique Users**: {unique_users}"
+    server_stats_message += f"\n📩 **Average Messages per User**: {avg_messages_per_user:.2f}"
 
     # Calculate the total messages over the specified periods
     daily_total = sum([date_count[1] for date_count in daily_messages_over_time[:1]])
@@ -66,48 +64,54 @@ async def handle_serverstats(message):
     monthly_total = sum([date_count[1] for date_count in daily_messages_over_time[:30]])
     yearly_total = sum([date_count[1] for date_count in yearly_messages_over_time[:1]])
 
-    # Format the message counts for each interval
-    stats_message += "\n📆 **Server Messages Over Time**:\n"
-    stats_message += f"\t\t\t\t\t\t**Daily Messages:** {daily_total}\n"
-    stats_message += f"\t\t\t\t\t\t**Weekly Messages:** {weekly_total}\n"
-    stats_message += f"\t\t\t\t\t\t**Monthly Messages:** {monthly_total}\n"
-    stats_message += f"\t\t\t\t\t\t**Yearly Messages:** {yearly_total}\n"
+    server_stats_message += "\n📆 **Server Messages Over Time**:\n"
+    server_stats_message += f"\t\t\t\t\t\t**Daily Messages:** {daily_total}\n"
+    server_stats_message += f"\t\t\t\t\t\t**Weekly Messages:** {weekly_total}\n"
+    server_stats_message += f"\t\t\t\t\t\t**Monthly Messages:** {monthly_total}\n"
+    server_stats_message += f"\t\t\t\t\t\t**Yearly Messages:** {yearly_total}\n"
 
-    stats_message += "\n:loud_sound: **Top 3 Active Channels**:\n"
+    server_stats_message += "\n:loud_sound: **Top 3 Active Channels**:\n"
     for i, channel in enumerate(active_channels_data, 1):
-        stats_message += f"{i}. :speech_balloon: {channel[0]} - {channel[1]} messages\n"
+        server_stats_message += f"{i}. :speech_balloon: {channel[0]} - {channel[1]} messages\n"
 
-    # User stats per server
-    stats_message += "\n\n:trophy: **Top 3 Active Users**:\n"
-    for i, user in enumerate(top_users_data, 1):
-        stats_message += f"{i}. :bust_in_silhouette: {user[0]} - {user[1]} messages\n"
+    await message.channel.send(server_stats_message)
 
-    stats_message += "\n\n:star2: **Top 3 Mentioners**:\n"
-    for i, mention in enumerate(top_mentions_data, 1):
-        stats_message += f"{i}. :busts_in_silhouette: {mention[0]} - {mention[1]} times\n"
-
-    stats_message += "\n\n🏆 **Top 3 Most Mentioned Users**:\n"
-    for i, user in enumerate(most_mentioned_users, 1):
-        stats_message += f"{i}. 📣 {user[0]} - {user[1]} mentions\n"
-
-    stats_message += "\n\n👴 **Top 3 Oldest Discord Users**:\n"
-    for i, user in enumerate(oldest_users_data, 1):
-        stats_message += f"{i}. :bust_in_silhouette: {user[0]}\n"
-
-    stats_message += "\n\n🖊 **Top 3 Users with Longest Average Messages**:\n"
-    for i, user in enumerate(longest_messages_users_data, 1):
-        stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Avg. {user[1]:.2f} characters per message\n"
-
-    stats_message += "\n\n:heart: **Top 3 Vibe Check Champions**:\n"
-    for i, user in enumerate(sentiment_leaders_data, 1):
-        stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Score: {user[1]:.2f}\n"
-
-    stats_message += "\n\n:sob: **Top 3 Loser Vibes**:\n"
-    for i, user in enumerate(sentiment_losers_data, 1):
-        stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Score: {user[1]:.2f}\n"
-
-    await message.channel.send(stats_message)
-
-    # Sending the image in Discord
+    # Sending the user growth image in Discord
     image = File(image_path, filename="images/user_growth.png")
     await message.channel.send("📈 **User Growth Over Time**", file=image)
+
+    # Server Olympics - User Specific Stats
+    user_stats_message = f"\n\n\n:trophy: **Server Olympics for {server_name}**:trophy:\n"
+
+    # Format user statistics
+    user_stats_message += "\n:trophy: **Top 3 Active Users**:\n"
+    for i, user in enumerate(top_users_data, 1):
+        user_stats_message += f"{i}. :bust_in_silhouette: {user[0]} - {user[1]} messages\n"
+
+    user_stats_message += "\n:star2: **Top 3 Mentioners**:\n"
+    for i, mention in enumerate(top_mentions_data, 1):
+        user_stats_message += f"{i}. :busts_in_silhouette: {mention[0]} - {mention[1]} times\n"
+
+    user_stats_message += "\n🏆 **Top 3 Most Mentioned Users**:\n"
+    for i, user in enumerate(most_mentioned_users, 1):
+        user_stats_message += f"{i}. 📣 {user[0]} - {user[1]} mentions\n"
+
+    user_stats_message += "\n👴 **Top 3 Oldest Discord Users**:\n"
+    for i, user in enumerate(oldest_users_data, 1):
+        user_stats_message += f"{i}. :bust_in_silhouette: {user[0]}\n"
+
+    user_stats_message += "\n🖊 **Top 3 Users with Longest Average Messages**:\n"
+    for i, user in enumerate(longest_messages_users_data, 1):
+        user_stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Avg. {user[1]:.2f} characters per message\n"
+
+    user_stats_message += "\n:heart: **Top 3 Vibe Check Champs**:\n"
+    for i, user in enumerate(sentiment_leaders_data, 1):
+        user_stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Score: {user[1]:.2f}\n"
+
+    user_stats_message += "\n:sob: **Top 3 Loser Vibes**:\n"
+    for i, user in enumerate(sentiment_losers_data, 1):
+        user_stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Score: {user[1]:.2f}\n"
+
+    await message.channel.send(user_stats_message)
+
+

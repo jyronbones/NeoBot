@@ -144,7 +144,6 @@ def _get_users_with_longest_messages(servername, limit):
     return results
 
 
-
 async def get_sentiment_leaders(servername, limit=3):
     return await async_db_executor(_get_sorted_sentiments_desc, servername, limit)
 
@@ -164,7 +163,6 @@ def _get_sorted_sentiments_asc(servername, limit):
 def _get_sorted_sentiments(servername, limit, order):
     cnxn, cursor = connect_to_db()
 
-    # First, get all the messages by users
     cursor.execute(
         """
         SELECT username, message
