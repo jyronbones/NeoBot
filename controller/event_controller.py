@@ -62,10 +62,11 @@ async def on_message(client, message):
             return
 
         try:
+            is_answering_question = True
+            
             if command == "question":
                 target = message.channel if not is_private else message.author
                 await target.send("Please ask me a question!")
-                is_answering_question = True
                 question_message = await client.wait_for(
                     "message",
                     timeout=config.USER_RESPONSE_TIME,
@@ -76,7 +77,11 @@ async def on_message(client, message):
                 await handle_question(question_message, target)
 
             elif command == "roll":
-                await handle_roll(is_private, message)
+                try:
+                    await handle_roll(is_private, message)
+                except Exception as e:
+                    await message.channel.send("Error handling the roll command.")
+                    print(f"Error in roll command: {e}")
 
             elif command == "catfact":
                 await handle_catfact(is_private, message)
