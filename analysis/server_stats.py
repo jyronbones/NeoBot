@@ -5,7 +5,8 @@ from database.fetch_server_analysis_data import get_total_messages, get_total_li
     get_busiest_day, get_unique_users, get_avg_messages_per_user_async, get_user_growth_over_time, \
     get_messages_over_time
 from database.fetch_server_users_analysis_data import get_message_with_mentions_count, get_top_users, \
-    get_top_mentioners, get_active_channels, get_most_mentioned_users, get_oldest_users, get_users_with_longest_messages
+    get_top_mentioners, get_active_channels, get_most_mentioned_users, get_oldest_users, \
+    get_users_with_longest_messages, get_sentiment_leaders, get_sentiment_losers
 
 
 async def handle_serverstats(message):
@@ -36,6 +37,8 @@ async def handle_serverstats(message):
     most_mentioned_users = await get_most_mentioned_users(server_name)
     oldest_users_data = await get_oldest_users(server_name)
     longest_messages_users_data = await get_users_with_longest_messages(server_name)
+    sentiment_leaders_data = await get_sentiment_leaders(server_name)
+    sentiment_losers_data = await get_sentiment_losers(server_name)
 
     # Getting the saved image path
     image_path = plot_user_growth(user_growth_data)
@@ -94,6 +97,14 @@ async def handle_serverstats(message):
     stats_message += "\n\n🖊 **Top 3 Users with Longest Average Messages**:\n"
     for i, user in enumerate(longest_messages_users_data, 1):
         stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Avg. {user[1]:.2f} characters per message\n"
+
+    stats_message += "\n\n:heart: **Top 3 Vibe Check Champions**:\n"
+    for i, user in enumerate(sentiment_leaders_data, 1):
+        stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Score: {user[1]:.2f}\n"
+
+    stats_message += "\n\n:sob: **Top 3 Loser Vibes**:\n"
+    for i, user in enumerate(sentiment_losers_data, 1):
+        stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Score: {user[1]:.2f}\n"
 
     await message.channel.send(stats_message)
 

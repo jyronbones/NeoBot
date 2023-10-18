@@ -1,6 +1,7 @@
+import pyodbc
 from database.db import connect_to_db
 from database.message_extractors import extract_user_id_from_mention
-import pyodbc
+from textblob import TextBlob
 
 
 def fetch_username(discord_userid):
@@ -39,3 +40,8 @@ def fetch_username(discord_userid):
             cursor.close()
         if cnxn:
             cnxn.close()
+
+
+def calculate_sentiment(text):
+    analysis = TextBlob(text)
+    return analysis.sentiment.polarity

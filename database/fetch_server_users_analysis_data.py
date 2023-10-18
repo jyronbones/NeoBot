@@ -1,6 +1,7 @@
 from collections import Counter
 from database import fetch_data_helpers
 from database.db import async_db_executor, connect_to_db
+from database.fetch_data_helpers import calculate_sentiment
 
 
 async def get_top_users(servername, limit=3):
@@ -141,3 +142,65 @@ def _get_users_with_longest_messages(servername, limit):
     cursor.close()
     cnxn.close()
     return results
+
+
+
+async def get_sentiment_leaders(servername, limit=3):
+    return await async_db_executor(_get_sorted_sentiments_desc, servername, limit)
+
+
+async def get_sentiment_losers(servername, limit=3):
+    return await async_db_executor(_get_sorted_sentiments_asc, servername, limit)
+
+
+def _get_sorted_sentiments_desc(servername, limit):
+    return _get_sorted_sentiments(servername, limit, "desc")
+
+
+def _get_sorted_sentiments_asc(servername, limit):
+    return _get_sorted_sentiments(servername, limit, "asc")
+
+
+def _get_sorted_sentiments(servername, limit, order):
+    cnxn, cursor = connect_to_db()
+
+    # First, get all the messages by users
+    cursor.execute(
+        """
+        SELECT username, message
+        FROM dbo.discord_logs
+        WHERE servername = ?
+        """,
+        (servername,)
+    )
+
+    rows = cursor.fetchall()
+
+    # Calculate sentiment for each message and store
+    user_sentiments = {}
+    for row in rows:
+        username = row[0]
+        message = row[1]
+        sentiment = calculate_sentiment(message)
+
+        if username in user_sentiments:
+            user_sentiments[username].append(sentiment)
+        else:
+            user_sentiments[username] = [sentiment]
+
+    # Calculate average sentiment for each user
+    avg_sentiments = {}
+    for user, sentiments in user_sentiments.items():
+        avg_sentiments[user] = sum(sentiments) / len(sentiments)
+
+    # Sort users by average sentiment
+    if order == "desc":
+        sorted_users = sorted(avg_sentiments.items(), key=lambda x: x[1], reverse=True)
+    else:  # 'asc' or any other value will default to ascending order
+        sorted_users = sorted(avg_sentiments.items(), key=lambda x: x[1])
+
+    cursor.close()
+    cnxn.close()
+
+    # Return users based on sentiment
+    return sorted_users[:limit]
