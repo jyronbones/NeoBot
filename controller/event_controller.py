@@ -57,18 +57,15 @@ async def on_message(client, message):
         else:
             command = message.content[len(config.prefix):].strip()
 
-        if command == "question":
-            if is_answering_question:
-                # introducing an asynchronous delay in the event loop ensuring that the bot handles one task at a time
-                await message.channel.send("")
-                return
+        if is_answering_question:
+            await message.channel.send("")  # Introduce delay
+            return
 
-            target = message.channel if not is_private else message.author
-            await target.send("Please ask me a question!")
-
-            is_answering_question = True
-
-            try:
+        try:
+            if command == "question":
+                target = message.channel if not is_private else message.author
+                await target.send("Please ask me a question!")
+                is_answering_question = True
                 question_message = await client.wait_for(
                     "message",
                     timeout=config.USER_RESPONSE_TIME,
@@ -77,64 +74,69 @@ async def on_message(client, message):
                         config.prefix)
                 )
                 await handle_question(question_message, target)
-            except asyncio.TimeoutError:
+
+            elif command == "roll":
+                await handle_roll(is_private, message)
+
+            elif command == "catfact":
+                await handle_catfact(is_private, message)
+
+            elif command == "weather":
+                await handle_weather(client, is_private, message)
+
+            elif command == "joke":
+                await handle_joke(is_private, message)
+
+            elif command == "movie":
+                await handle_movie(is_private, message)
+
+            elif command == "define":
+                await handle_define(client, is_private, message)
+
+            elif command == "reddit":
+                await handle_reddit(client, is_private, message)
+
+            elif command == "trivia":
+                await handle_trivia(client, is_private, message)
+
+            elif command == "news":
+                await handle_news(client, is_private, message)
+
+            elif command == "stock":
+                await handle_stock(client, is_private, message)
+
+            elif command == "song":
+                await handle_song(client, is_private, message)
+
+            elif command == "recipe":
+                await handle_recipe(client, is_private, message)
+
+            elif command == "poem":
+                await handle_poem(is_private, message)
+
+            elif command == "lyrics":
+                await handle_lyrics(is_private, client, message)
+
+            elif command == "insult":
+                await handle_insult(client, is_private, message)
+
+            elif command == "wordcloud":
+                server = message.guild
+                channel = message.channel
+                await create_word_cloud(server.name, channel, is_private)
+
+            elif command == "serverstats":
+                await handle_serverstats(message)
+
+            elif command == "commands":
+                await handle_commands(commands, config.prefix, message, is_private)
+
+        except asyncio.TimeoutError:
+            if command == "question":
                 timeout_message = "Sorry, you took too long to ask a question!"
+                target = message.channel if not is_private else message.author
                 await target.send(timeout_message)
-            finally:
-                is_answering_question = False
-
-        elif command == "roll":
-            await handle_roll(is_private, message)
-
-        elif command == "catfact":
-            await handle_catfact(is_private, message)
-
-        elif command == "weather":
-            await handle_weather(client, is_private, message)
-
-        elif command == "joke":
-            await handle_joke(is_private, message)
-
-        elif command == "movie":
-            await handle_movie(is_private, message)
-
-        elif command == "define":
-            await handle_define(client, is_private, message)
-
-        elif command == "reddit":
-            await handle_reddit(client, is_private, message)
-
-        elif command == "trivia":
-            await handle_trivia(client, is_private, message)
-
-        elif command == "news":
-            await handle_news(client, is_private, message)
-
-        elif command == "stock":
-            await handle_stock(client, is_private, message)
-
-        elif command == "song":
-            await handle_song(client, is_private, message)
-
-        elif command == "recipe":
-            await handle_recipe(client, is_private, message)
-
-        elif command == "poem":
-            await handle_poem(is_private, message)
-
-        elif command == "lyrics":
-            await handle_lyrics(is_private, client, message)
-
-        elif command == "insult":
-            await handle_insult(client, is_private, message)
-
-        elif command == "wordcloud":
-            server = message.guild
-            channel = message.channel
-            await create_word_cloud(server.name, channel, is_private)
-
-        elif command == "serverstats":
-            await handle_serverstats(message)
-
-        elif command == "commands":
-            await handle_commands(commands, config.prefix, message, is_private)
+        except Exception as e:
+            print(f"An error occurred while processing the command: {e}")
+        finally:
+            is_answering_question = False
