@@ -6,7 +6,7 @@ from database.fetch_server_analysis_data import get_total_messages, get_total_li
     get_messages_over_time
 from database.fetch_server_users_analysis_data import get_message_with_mentions_count, get_top_users, \
     get_top_mentioners, get_active_channels, get_most_mentioned_users, get_oldest_users, \
-    get_users_with_longest_messages, get_sentiment_leaders, get_sentiment_losers
+    get_users_with_longest_messages, get_sentiment_leaders, get_sentiment_losers, get_users_with_most_links
 
 
 async def handle_serverstats(message):
@@ -39,6 +39,7 @@ async def handle_serverstats(message):
     longest_messages_users_data = await get_users_with_longest_messages(server_name)
     sentiment_leaders_data = await get_sentiment_leaders(server_name)
     sentiment_losers_data = await get_sentiment_losers(server_name)
+    users_with_most_links_data = await get_users_with_most_links(server_name)
 
     # Getting the saved image path
     image_path = plot_user_growth(user_growth_data)
@@ -111,6 +112,12 @@ async def handle_serverstats(message):
     user_stats_message += "\n:sob: **Top 3 Loser Vibes**:\n"
     for i, user in enumerate(sentiment_losers_data, 1):
         user_stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Score: {user[1]:.2f}\n"
+
+    user_stats_message += "\n🔗 **Top 3 Link Sharers & Their Top Domain**:\n"
+    for i, user_data in enumerate(users_with_most_links_data, 1):
+        user, total_links, most_common_domain, _ = user_data  # Using '_' to discard the domain_count
+        user_stats_message += (f"{i}. :bust_in_silhouette: {user} - {total_links} links "
+                               f"(Most Popular: {most_common_domain})\n")
 
     await message.channel.send(user_stats_message)
 

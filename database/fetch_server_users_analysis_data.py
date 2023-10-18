@@ -1,4 +1,6 @@
-from collections import Counter
+from collections import Counter, defaultdict
+from urllib.parse import urlparse
+
 from database import fetch_data_helpers
 from database.db import async_db_executor, connect_to_db
 from database.fetch_data_helpers import calculate_sentiment
@@ -202,3 +204,51 @@ def _get_sorted_sentiments(servername, limit, order):
 
     # Return users based on sentiment
     return sorted_users[:limit]
+
+
+async def get_users_with_most_links(servername, limit=3):
+    return await async_db_executor(_get_users_with_most_links, servername, limit)
+
+
+def _get_users_with_most_links(servername, limit):
+    cnxn, cursor = connect_to_db()
+    cursor.execute(
+        """
+        SELECT username, links
+        FROM dbo.discord_logs
+        WHERE servername = ? AND links IS NOT NULL AND links <> ''
+        """,
+        (servername,)
+    )
+
+    rows = cursor.fetchall()
+
+    # Create a dictionary to hold user data
+    user_link_data = defaultdict(Counter)
+
+    # Iterate through each row to extract links and then the domain of each link
+    for row in rows:
+        username = row[0]
+        links = row[1].split(',')
+
+        # Extract the domain from each link and increment the count
+        for link in links:
+            domain = urlparse(link).netloc
+            user_link_data[username][domain] += 1
+
+    cursor.close()
+    cnxn.close()
+
+    # Sort users based on the total number of links they shared
+    sorted_users = sorted(user_link_data.items(), key=lambda x: sum(x[1].values()), reverse=True)
+
+    # Modify the output to include the most popular domain for each user
+    top_users = []
+    for user, domains in sorted_users[:limit]:
+        # This gives us the most common domain for the user
+        most_common_domain, domain_count = domains.most_common(1)[0]
+
+        total_links = sum(domains.values())
+        top_users.append((user, total_links, most_common_domain, domain_count))
+
+    return top_users
