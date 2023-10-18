@@ -118,3 +118,26 @@ def _get_oldest_users(servername, limit):
     cursor.close()
     cnxn.close()
     return results
+
+
+# Top 3 Users with the Longest Messages
+async def get_users_with_longest_messages(servername, limit=3):
+    return await async_db_executor(_get_users_with_longest_messages, servername, limit)
+
+
+def _get_users_with_longest_messages(servername, limit):
+    cnxn, cursor = connect_to_db()
+    cursor.execute(
+        """
+        SELECT TOP (?) username, AVG(LEN(message)) as avg_length 
+        FROM dbo.discord_logs 
+        WHERE servername = ?
+        GROUP BY username 
+        ORDER BY avg_length DESC
+        """,
+        (limit, servername)
+    )
+    results = cursor.fetchall()
+    cursor.close()
+    cnxn.close()
+    return results

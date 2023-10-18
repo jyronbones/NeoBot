@@ -5,7 +5,7 @@ from database.fetch_server_analysis_data import get_total_messages, get_total_li
     get_busiest_day, get_unique_users, get_avg_messages_per_user_async, get_user_growth_over_time, \
     get_messages_over_time
 from database.fetch_server_users_analysis_data import get_message_with_mentions_count, get_top_users, \
-    get_top_mentioners, get_active_channels, get_most_mentioned_users, get_oldest_users
+    get_top_mentioners, get_active_channels, get_most_mentioned_users, get_oldest_users, get_users_with_longest_messages
 
 
 async def handle_serverstats(message):
@@ -35,6 +35,7 @@ async def handle_serverstats(message):
     active_channels_data = await get_active_channels(server_name)
     most_mentioned_users = await get_most_mentioned_users(server_name)
     oldest_users_data = await get_oldest_users(server_name)
+    longest_messages_users_data = await get_users_with_longest_messages(server_name)
 
     # Getting the saved image path
     image_path = plot_user_growth(user_growth_data)
@@ -69,6 +70,10 @@ async def handle_serverstats(message):
     stats_message += f"\t\t\t\t\t\t**Monthly Messages:** {monthly_total}\n"
     stats_message += f"\t\t\t\t\t\t**Yearly Messages:** {yearly_total}\n"
 
+    stats_message += "\n:loud_sound: **Top 3 Active Channels**:\n"
+    for i, channel in enumerate(active_channels_data, 1):
+        stats_message += f"{i}. :speech_balloon: {channel[0]} - {channel[1]} messages\n"
+
     # User stats per server
     stats_message += "\n\n:trophy: **Top 3 Active Users**:\n"
     for i, user in enumerate(top_users_data, 1):
@@ -86,9 +91,9 @@ async def handle_serverstats(message):
     for i, user in enumerate(oldest_users_data, 1):
         stats_message += f"{i}. :bust_in_silhouette: {user[0]}\n"
 
-    stats_message += "\n\n:loud_sound: **Top 3 Active Channels**:\n"
-    for i, channel in enumerate(active_channels_data, 1):
-        stats_message += f"{i}. :speech_balloon: {channel[0]} - {channel[1]} messages\n"
+    stats_message += "\n\n🖊 **Top 3 Users with Longest Average Messages**:\n"
+    for i, user in enumerate(longest_messages_users_data, 1):
+        stats_message += f"{i}. :bust_in_silhouette: {user[0]} - Avg. {user[1]:.2f} characters per message\n"
 
     await message.channel.send(stats_message)
 
