@@ -126,5 +126,3 @@ async def handle_serverstats(message):
         user_stats_message += f"{i}. :bust_in_silhouette: {user[0]} - {user[1]} conversations started\n"
 
     await message.channel.send(user_stats_message)
-
-
