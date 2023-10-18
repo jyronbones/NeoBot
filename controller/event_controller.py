@@ -63,7 +63,7 @@ async def on_message(client, message):
 
         try:
             is_answering_question = True
-            
+
             if command == "question":
                 target = message.channel if not is_private else message.author
                 await target.send("Please ask me a question!")
