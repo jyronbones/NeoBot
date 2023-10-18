@@ -14,7 +14,7 @@ async def handle_question(question_message, target):
     max_retries = 5
     retry_count = 0
 
-    await target.send("Working on your question...⏳")
+    await target.send("Working on your request...⏳")
 
     try:
         response = openai.ChatCompletion.create(
