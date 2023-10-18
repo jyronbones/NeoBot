@@ -23,7 +23,7 @@ from handlers.joke import handle_joke
 from handlers.movie import handle_movie
 from handlers.lyrics import handle_lyrics
 
-currently_answering = set()
+is_answering_question = False
 
 
 async def on_ready(client):
@@ -31,12 +31,9 @@ async def on_ready(client):
 
 
 async def on_message(client, message):
+    global is_answering_question
 
     if message.author == client.user:
-        return
-
-    # If the user is already in a session, return without processing commands.
-    if message.author.id in currently_answering:
         return
 
     if message.guild is not None:
@@ -61,11 +58,15 @@ async def on_message(client, message):
             command = message.content[len(config.prefix):].strip()
 
         if command == "question":
+            if is_answering_question:
+                # introducing an asynchronous delay in the event loop ensuring that the bot handles one task at a time
+                await message.channel.send("")
+                return
+
             target = message.channel if not is_private else message.author
             await target.send("Please ask me a question!")
 
-            # Add the user's ID to the currently_answering set.
-            currently_answering.add(message.author.id)
+            is_answering_question = True
 
             try:
                 question_message = await client.wait_for(
@@ -80,8 +81,7 @@ async def on_message(client, message):
                 timeout_message = "Sorry, you took too long to ask a question!"
                 await target.send(timeout_message)
             finally:
-                # Ensure that the user's ID is removed from the set, regardless of what happened.
-                currently_answering.discard(message.author.id)
+                is_answering_question = False
 
         elif command == "roll":
             await handle_roll(is_private, message)
