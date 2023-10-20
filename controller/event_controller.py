@@ -131,7 +131,8 @@ async def on_message(client, message):
                 await create_word_cloud(server.name, channel, is_private)
 
             elif command == "serverstats":
-                await handle_serverstats(message)
+                # await handle_serverstats(message)
+                await (message.channel if not is_private else message.author).send("🚧 Under Construction 🚧")
 
             elif command == "commands":
                 await handle_commands(commands, config.prefix, message, is_private)
