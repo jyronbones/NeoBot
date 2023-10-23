@@ -19,7 +19,7 @@ Introducing a versatile Python Discord chatbot. Leveraging OpenAI GPT-4, it offe
 <li>Returns random jokes and cat facts</li>
 <li>Recommends movies and recipes based on user input</li>
 <li>Can retrieve current stock data and recent news articles</li>
-<li>Can generate server stats</li>
+<li>Can generate server stats based on analysis from public user messages</li>
 </ul>
 
 ## Prerequisites
