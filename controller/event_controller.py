@@ -24,6 +24,7 @@ from handlers.movie import handle_movie
 from handlers.lyrics import handle_lyrics
 
 is_answering_question = False
+author_name = ""
 
 
 async def on_ready(client):
@@ -31,7 +32,7 @@ async def on_ready(client):
 
 
 async def on_message(client, message):
-    global is_answering_question
+    global is_answering_question, author_name
 
     if message.author == client.user:
         return
@@ -140,7 +141,7 @@ async def on_message(client, message):
 
         except asyncio.TimeoutError:
             if command == "question":
-                timeout_message = "Sorry, you took too long to ask a question!"
+                timeout_message = f"Sorry, you took too long to ask a question {author_name}!"
                 target = message.channel if not is_private else message.author
                 await target.send(timeout_message)
         except Exception as e:
