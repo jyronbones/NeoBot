@@ -66,7 +66,8 @@ async def on_message(client, message):
 
             if command == "question":
                 target = message.channel if not is_private else message.author
-                await target.send("Please ask me a question!")
+                author_name = str(message.author).split('#')[0]
+                await target.send(f"Please ask me a question {author_name}!")
                 question_message = await client.wait_for(
                     "message",
                     timeout=config.USER_RESPONSE_TIME,
