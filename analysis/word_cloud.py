@@ -2,11 +2,14 @@ import asyncio
 import io
 import discord
 from database.word_cloud_data_fetch import fetch_data
-import matplotlib.pyplot as plt
 from concurrent.futures import ThreadPoolExecutor
 from wordcloud import WordCloud
 from discord.errors import HTTPException
 from database.message_extractors import extract_mentions, extract_links
+
+# Switch to a different matplotlib backend (thread safety)
+import matplotlib
+matplotlib.use('Agg')
 
 executor = ThreadPoolExecutor()
 
@@ -42,9 +45,8 @@ async def create_word_cloud(servername, channel, is_private):
     except ValueError:
         return await channel.send(f"There is not enough data to generate a word cloud for {servername}.")
 
-    plt.imshow(wordcloud, interpolation='bilinear')
-    plt.axis('off')
-    plt.savefig('images/wordcloud.png')  # Save the plot to an "images" directory
+    # Save the word cloud directly from the WordCloud instance
+    wordcloud.to_file('images/wordcloud.png')
 
     try:
         await send_word_cloud_image(channel)
