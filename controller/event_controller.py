@@ -141,7 +141,7 @@ async def on_message(client, message):
 
         except asyncio.TimeoutError:
             if command == "question":
-                timeout_message = f"Sorry, you took too long to ask a question {author_name}!"
+                timeout_message = f"Sorry {author_name}, you took too long to ask a question!"
                 target = message.channel if not is_private else message.author
                 await target.send(timeout_message)
         except Exception as e:
